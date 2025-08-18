@@ -6,12 +6,13 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import { ExportModal } from '@/components/ExportModal';
 import { FilterModal } from '@/components/FilterModal';
-import { WhatsAppStatus } from '@/components/WhatsAppStatus';
+import { useWhatsAppInstances } from '@/hooks/useWhatsAppInstances';
 import { 
   MessageSquare, 
   TrendingUp, 
@@ -56,6 +57,9 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  
+  // WhatsApp instances data
+  const { instances, isLoadingInstances } = useWhatsAppInstances();
   
   // Buscar dados do dashboard
   const { 
@@ -311,7 +315,129 @@ export default function Dashboard() {
                 </div>
               </Button>
             </div>
-            <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-4">
+                {/* WhatsApp Status - Mobile Indicator */}
+                <div className="lg:hidden">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => navigate('/whatsapp-connect')}
+                        className="relative"
+                      >
+                        <MessageSquare className="h-4 w-4" />
+                        {instances && instances.length > 0 && instances.filter(i => i.status === 'connected').length === 0 && (
+                          <div className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full animate-pulse"></div>
+                        )}
+                        {instances && instances.length > 0 && instances.filter(i => i.status === 'connected').length > 0 && (
+                          <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></div>
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">
+                      <div className="text-xs">
+                        {instances && instances.length > 0 ? (
+                          <div>
+                            <div className="font-medium mb-1">WhatsApp Status</div>
+                            <div>{instances.filter(i => i.status === 'connected').length} de {instances.length} conectadas</div>
+                          </div>
+                        ) : (
+                          <div>Conectar WhatsApp</div>
+                        )}
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                
+                                {/* WhatsApp Status - Compact */}
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="hidden lg:flex items-center gap-3 px-3 py-2 bg-muted/50 rounded-lg border border-border/50 cursor-pointer hover:bg-muted/70 transition-colors">
+                      <div className="flex items-center gap-2">
+                        <MessageSquare className="h-4 w-4 text-primary" />
+                        <span className="text-sm font-medium">WhatsApp</span>
+                      </div>
+                      <Separator orientation="vertical" className="h-4" />
+                      {isLoadingInstances ? (
+                        <div className="flex items-center gap-2">
+                          <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-primary"></div>
+                          <span className="text-xs text-muted-foreground">Carregando...</span>
+                        </div>
+                      ) : instances && instances.length > 0 ? (
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1">
+                            {instances.filter(i => i.status === 'connected').length > 0 ? (
+                              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                            ) : (
+                              <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                            )}
+                            <span className="text-xs font-medium">
+                              {instances.filter(i => i.status === 'connected').length} de {instances.length} conectadas
+                            </span>
+                          </div>
+                          {instances.filter(i => i.status === 'connected').length === 0 && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => navigate('/whatsapp-connect')}
+                              className="h-6 px-2 text-xs hover:bg-primary/10"
+                            >
+                              Conectar
+                            </Button>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                          <span className="text-xs text-muted-foreground">Nenhuma instância</span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => navigate('/whatsapp-connect')}
+                            className="h-6 px-2 text-xs hover:bg-primary/10"
+                          >
+                            Conectar
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="max-w-xs">
+                    <div className="space-y-2">
+                      <div className="font-medium">Status do WhatsApp</div>
+                      {instances && instances.length > 0 ? (
+                        <div className="space-y-1">
+                          {instances.map((instance) => (
+                            <div key={instance.id} className="flex items-center justify-between text-xs">
+                              <span>{instance.instance_name}</span>
+                              <div className="flex items-center gap-1">
+                                {instance.status === 'connected' ? (
+                                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                ) : instance.status === 'connecting' ? (
+                                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                                ) : (
+                                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                                )}
+                                <span className="text-muted-foreground">
+                                  {instance.status === 'connected' ? 'Conectado' : 
+                                   instance.status === 'connecting' ? 'Conectando' : 'Desconectado'}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-xs text-muted-foreground">
+                          Nenhuma instância configurada. Clique para conectar.
+                        </div>
+                      )}
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              
+              <Separator orientation="vertical" className="h-6" />
+              
               <div className="hidden md:block text-right">
                 <div className="text-sm font-medium">{user.email}</div>
                 <div className="text-xs text-muted-foreground">Usuário ativo</div>
@@ -546,10 +672,7 @@ export default function Dashboard() {
         </div>
 
         {/* Seção de Destaques e Ações */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Status WhatsApp */}
-          <WhatsAppStatus />
-          
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Destaque do Período */}
           <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
             <CardHeader>
