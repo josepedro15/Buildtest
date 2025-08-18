@@ -1,0 +1,176 @@
+{
+  "name": "Inserir Dados Dashboard Supabase",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "url": "https://pabomyvzfjicpkeioncb.supabase.co/rest/v1/dashboard_data",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "{{ $env.SUPABASE_SERVICE_ROLE_KEY }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=minimal"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "user_id",
+              "value": "{{ $json.user_id }}"
+            },
+            {
+              "name": "periodo_inicio",
+              "value": "{{ $json.periodo_inicio }}"
+            },
+            {
+              "name": "periodo_fim",
+              "value": "{{ $json.periodo_fim }}"
+            },
+            {
+              "name": "total_atendimentos",
+              "value": "{{ $json.total_atendimentos }}"
+            },
+            {
+              "name": "taxa_conversao",
+              "value": "{{ $json.taxa_conversao }}"
+            },
+            {
+              "name": "tempo_medio_resposta",
+              "value": "{{ $json.tempo_medio_resposta }}"
+            },
+            {
+              "name": "nota_media_qualidade",
+              "value": "{{ $json.nota_media_qualidade }}"
+            },
+            {
+              "name": "intencao_compra",
+              "value": "{{ $json.intencao_compra }}"
+            },
+            {
+              "name": "intencao_duvida_geral",
+              "value": "{{ $json.intencao_duvida_geral }}"
+            },
+            {
+              "name": "intencao_reclamacao",
+              "value": "{{ $json.intencao_reclamacao }}"
+            },
+            {
+              "name": "intencao_suporte",
+              "value": "{{ $json.intencao_suporte }}"
+            },
+            {
+              "name": "intencao_orcamento",
+              "value": "{{ $json.intencao_orcamento }}"
+            },
+            {
+              "name": "insights_funcionou",
+              "value": "{{ $json.insights_funcionou }}"
+            },
+            {
+              "name": "insights_atrapalhou",
+              "value": "{{ $json.insights_atrapalhou }}"
+            },
+            {
+              "name": "melhor_atendimento_cliente",
+              "value": "{{ $json.melhor_atendimento_cliente }}"
+            },
+            {
+              "name": "melhor_atendimento_observacao",
+              "value": "{{ $json.melhor_atendimento_observacao }}"
+            },
+            {
+              "name": "melhor_atendimento_nota",
+              "value": "{{ $json.melhor_atendimento_nota }}"
+            },
+            {
+              "name": "atendimento_critico_cliente",
+              "value": "{{ $json.atendimento_critico_cliente }}"
+            },
+            {
+              "name": "atendimento_critico_observacao",
+              "value": "{{ $json.atendimento_critico_observacao }}"
+            },
+            {
+              "name": "atendimento_critico_nota",
+              "value": "{{ $json.atendimento_critico_nota }}"
+            },
+            {
+              "name": "automacao_sugerida",
+              "value": "{{ $json.automacao_sugerida }}"
+            },
+            {
+              "name": "proximas_acoes",
+              "value": "{{ $json.proximas_acoes }}"
+            },
+            {
+              "name": "meta_taxa_conversao",
+              "value": "{{ $json.meta_taxa_conversao }}"
+            },
+            {
+              "name": "meta_tempo_resposta",
+              "value": "{{ $json.meta_tempo_resposta }}"
+            },
+            {
+              "name": "meta_nota_qualidade",
+              "value": "{{ $json.meta_nota_qualidade }}"
+            }
+          ]
+        }
+      },
+      "id": "http-request-supabase",
+      "name": "Inserir no Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        400,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Dados de exemplo para inserção\nreturn [\n  {\n    json: {\n      user_id: '00000000-0000-0000-0000-000000000000', // Substitua pelo UUID real\n      periodo_inicio: '2024-01-01',\n      periodo_fim: '2024-01-31',\n      total_atendimentos: 1234,\n      taxa_conversao: 24.5,\n      tempo_medio_resposta: 154,\n      nota_media_qualidade: 4.2,\n      intencao_compra: 45.0,\n      intencao_duvida_geral: 25.0,\n      intencao_reclamacao: 15.0,\n      intencao_suporte: 10.0,\n      intencao_orcamento: 5.0,\n      insights_funcionou: [\n        'Resposta rápida (< 1min): 87% dos clientes responderam positivamente',\n        'Ofertas personalizadas: aumentaram conversão em 34%'\n      ],\n      insights_atrapalhou: [\n        'Falta de clareza no pagamento: 23% abandonaram nesta etapa',\n        'Respostas genéricas: baixa satisfação (2,1/5)'\n      ],\n      melhor_atendimento_cliente: '+55 11 9xxxx-8765',\n      melhor_atendimento_observacao: 'Resposta em 30s, proposta personalizada, fechamento em 3 mensagens',\n      melhor_atendimento_nota: 5.0,\n      atendimento_critico_cliente: '+55 11 9xxxx-1234',\n      atendimento_critico_observacao: 'Demora de 12min, informações confusas, cliente abandonou',\n      atendimento_critico_nota: 1.5,\n      automacao_sugerida: [\n        'FAQ Automatizado: 67% das dúvidas são sobre horário de funcionamento',\n        'Reengajamento: clientes que enviam apenas \"Oi\" e param',\n        'Follow-up: lembrete para leads inativos há 3+ dias'\n      ],\n      proximas_acoes: [\n        'Revisar script de boas-vindas – Pendente (2024-01-20)',\n        'Implementar FAQ automatizado – Em andamento (2024-01-25)',\n        'Treinamento equipe - objeções – Feito (2024-01-15)'\n      ],\n      meta_taxa_conversao: '24,5% / Meta 30% (até março)',\n      meta_tempo_resposta: '2m 34s / Meta < 2m (até fevereiro)',\n      meta_nota_qualidade: '4,2 / Meta 4,5 (até abril)'\n    }\n  }\n];"
+      },
+      "id": "code-generate-data",
+      "name": "Gerar Dados",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        200,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Gerar Dados": {
+      "main": [
+        [
+          {
+            "node": "Inserir no Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1"
+}
