@@ -1,18 +1,3 @@
-# Configuração das Funções Administrativas
-
-## Como aplicar as funções no Supabase
-
-### 1. Acesse o Supabase Dashboard
-- Vá para https://supabase.com/dashboard
-- Selecione seu projeto
-
-### 2. Execute o SQL no Editor SQL
-- Vá para "SQL Editor" no menu lateral
-- Clique em "New query"
-- **IMPORTANTE**: Cole APENAS o código SQL abaixo (não copie as instruções markdown)
-- Ou use o arquivo `admin_functions.sql` que foi criado no projeto
-
-```sql
 -- Função para buscar todos os usuários (apenas para administradores)
 CREATE OR REPLACE FUNCTION get_all_users()
 RETURNS TABLE (
@@ -156,44 +141,3 @@ $$;
 COMMENT ON FUNCTION get_all_users() IS 'Função para buscar todos os usuários do sistema (apenas administradores)';
 COMMENT ON FUNCTION get_user_details(UUID) IS 'Função para buscar detalhes de um usuário específico com suas instâncias do WhatsApp (apenas administradores)';
 COMMENT ON FUNCTION get_all_users_with_instances() IS 'Função para buscar todos os usuários com suas instâncias do WhatsApp (apenas administradores)';
-```
-
-### 3. Execute a Query
-- Clique em "Run" para executar o SQL
-- Aguarde a confirmação de que as funções foram criadas
-
-### 4. Verificação
-- Vá para "Database" > "Functions" no menu lateral
-- Você deve ver as 3 funções criadas:
-  - `get_all_users()`
-  - `get_user_details(UUID)`
-  - `get_all_users_with_instances()`
-
-## Funcionalidades das Funções
-
-### get_all_users()
-- Retorna todos os usuários cadastrados no sistema
-- Inclui email, data de criação, último acesso e metadados
-- Ordenados por data de criação (mais recentes primeiro)
-
-### get_user_details(user_id)
-- Retorna detalhes de um usuário específico
-- Inclui todas as instâncias do WhatsApp vinculadas
-- Útil para visualização detalhada de um usuário
-
-### get_all_users_with_instances()
-- Retorna todos os usuários com suas instâncias do WhatsApp
-- Função principal usada pela página de administradores
-- Combina dados de usuários e instâncias em uma única consulta
-
-## Segurança
-- Todas as funções verificam se o usuário atual é administrador
-- Apenas os IDs específicos podem executar estas funções
-- Erro de acesso negado para usuários não autorizados
-
-## Após a Configuração
-Após aplicar estas funções, a página de administradores irá:
-1. Exibir todos os usuários cadastrados no sistema
-2. Mostrar o nome do usuário (se disponível nos metadados)
-3. Listar todas as instâncias do WhatsApp vinculadas
-4. Permitir busca por nome, email ou ID
