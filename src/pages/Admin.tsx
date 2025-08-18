@@ -150,9 +150,9 @@ export default function Admin() {
   const loadUsers = async () => {
     setLoading(true);
     try {
-      // Primeiro, tentar usar a função RPC que funciona
+      // Primeiro, tentar usar a função RPC final
       const { data: usersData, error: usersError } = await supabase
-        .rpc('get_all_users_working');
+        .rpc('get_all_users_final');
 
       if (usersError) {
         console.error('Erro ao carregar usuários via RPC:', usersError);
@@ -162,6 +162,7 @@ export default function Admin() {
         
         try {
           // Primeiro, tentar buscar da tabela profiles
+          console.log('Buscando dados da tabela profiles...');
           const { data: profilesData, error: profilesError } = await supabase
             .from('profiles')
             .select('*');
@@ -173,6 +174,8 @@ export default function Admin() {
             return;
           }
 
+          console.log('Profiles encontrados:', profilesData?.length || 0);
+
           // Buscar instâncias do WhatsApp para cada usuário
           const { data: instancesData, error: instancesError } = await supabase
             .from('whatsapp_instances')
@@ -182,6 +185,8 @@ export default function Admin() {
           if (instancesError) {
             console.error('Erro ao carregar instâncias:', instancesError);
           }
+
+          console.log('Instâncias encontradas:', instancesData?.length || 0);
 
           // Processar dados dos profiles
           const usersWithInstances: UserData[] = (profilesData || []).map((profile: any) => {
@@ -207,10 +212,11 @@ export default function Admin() {
             };
           });
 
+          console.log('Usuários processados:', usersWithInstances.length);
           setUsers(usersWithInstances);
           toast({
             title: "Aviso",
-            description: "Usando dados da tabela profiles. Aplique as funções SQL para dados completos.",
+            description: `Usando dados da tabela profiles (${usersWithInstances.length} usuários). Aplique as funções SQL para dados completos.`,
             variant: "default"
           });
           return;
