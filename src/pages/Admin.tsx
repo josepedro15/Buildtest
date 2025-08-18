@@ -30,6 +30,7 @@ import {
 interface UserData {
   id: string;
   email: string;
+  name?: string;
   created_at: string;
   last_sign_in_at: string | null;
   whatsapp_instances: WhatsAppInstance[];
@@ -83,54 +84,36 @@ export default function Admin() {
   const loadUsers = async () => {
     setLoading(true);
     try {
-      // Buscar instâncias do WhatsApp para obter usuários
-      const { data: instancesData, error: instancesError } = await supabase
-        .from('whatsapp_instances')
-        .select('*')
-        .eq('is_active', true);
+      // Usar a função RPC para buscar todos os usuários com suas instâncias
+      const { data: usersData, error: usersError } = await supabase
+        .rpc('get_all_users_with_instances');
 
-      if (instancesError) {
-        console.error('Erro ao carregar instâncias:', instancesError);
+      if (usersError) {
+        console.error('Erro ao carregar usuários:', usersError);
+        toast({
+          title: "Erro",
+          description: "Não foi possível carregar a lista de usuários.",
+          variant: "destructive"
+        });
+        return;
       }
 
-      // Buscar dados dos usuários através das instâncias
-      const userIds = [...new Set((instancesData || []).map((instance: any) => instance.user_id))];
-      
-      // Adicionar IDs dos administradores se não estiverem na lista
-      adminUserIds.forEach(adminId => {
-        if (!userIds.includes(adminId)) {
-          userIds.push(adminId);
-        }
-      });
-
-      // Para cada usuário, buscar informações básicas
-      const usersWithInstances: UserData[] = [];
-      
-      for (const userId of userIds) {
-        // Buscar instâncias do usuário
-        const userInstances = (instancesData || []).filter(
-          (instance: any) => instance.user_id === userId
-        );
-
-        // Buscar informações do usuário (simulado por enquanto)
-        // Em produção, você pode usar uma tabela de perfis ou RPC
-        const userData: UserData = {
-          id: userId,
-          email: `user-${userId.substring(0, 8)}@example.com`, // Placeholder
-          created_at: new Date().toISOString(), // Placeholder
-          last_sign_in_at: new Date().toISOString(), // Placeholder
-          whatsapp_instances: userInstances.map((instance: any) => ({
-            id: instance.id,
-            instance_name: instance.instance_name,
-            status: instance.status,
-            phone_number: instance.phone_number,
-            created_at: instance.created_at,
-            last_activity: instance.last_activity
-          }))
-        };
-
-        usersWithInstances.push(userData);
-      }
+      // Processar os dados retornados
+      const usersWithInstances: UserData[] = (usersData || []).map((userData: any) => ({
+        id: userData.id,
+        email: userData.email,
+        name: userData.raw_user_meta_data?.full_name || userData.raw_user_meta_data?.name || null,
+        created_at: userData.created_at,
+        last_sign_in_at: userData.last_sign_in_at,
+        whatsapp_instances: (userData.whatsapp_instances || []).map((instance: any) => ({
+          id: instance.id,
+          instance_name: instance.instance_name,
+          status: instance.status,
+          phone_number: instance.phone_number,
+          created_at: instance.created_at,
+          last_activity: instance.last_activity
+        }))
+      }));
 
       setUsers(usersWithInstances);
     } catch (error) {
@@ -147,7 +130,8 @@ export default function Admin() {
 
   const filteredUsers = users.filter(userData => {
     const matchesSearch = userData.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         userData.id.toLowerCase().includes(searchTerm.toLowerCase());
+                         userData.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (userData.name && userData.name.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesFilter = filterStatus === 'all' ||
                          (filterStatus === 'with-whatsapp' && userData.whatsapp_instances.length > 0) ||
@@ -315,7 +299,7 @@ export default function Admin() {
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
-                    placeholder="Buscar por email ou ID..."
+                    placeholder="Buscar por nome, email ou ID..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10"
@@ -395,20 +379,25 @@ export default function Admin() {
                           <div className="p-2 bg-primary/10 rounded-lg">
                             <User className="h-4 w-4 text-primary" />
                           </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium">{userData.email}</span>
-                              {adminUserIds.includes(userData.id) && (
-                                <Badge variant="default" className="bg-purple-500 hover:bg-purple-600">
-                                  <Crown className="h-3 w-3 mr-1" />
-                                  Admin
-                                </Badge>
-                              )}
-                            </div>
-                            <div className="text-xs text-muted-foreground font-mono">
-                              ID: {userData.id}
-                            </div>
-                          </div>
+                                                     <div>
+                             <div className="flex items-center gap-2">
+                               <span className="font-medium">{userData.email}</span>
+                               {adminUserIds.includes(userData.id) && (
+                                 <Badge variant="default" className="bg-purple-500 hover:bg-purple-600">
+                                   <Crown className="h-3 w-3 mr-1" />
+                                   Admin
+                                 </Badge>
+                               )}
+                             </div>
+                             {userData.name && (
+                               <div className="text-sm text-foreground font-medium">
+                                 {userData.name}
+                               </div>
+                             )}
+                             <div className="text-xs text-muted-foreground font-mono">
+                               ID: {userData.id}
+                             </div>
+                           </div>
                         </div>
                         
                         <div className="flex items-center gap-4 text-xs text-muted-foreground mb-3">
