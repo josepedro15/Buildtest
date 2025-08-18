@@ -71,14 +71,14 @@ BEGIN
     COALESCE(
       (SELECT jsonb_agg(
         jsonb_build_object(
-          'id', wi.id,
-          'instance_name', wi.instance_name,
-          'status', wi.status,
-          'phone_number', wi.phone_number,
-          'created_at', wi.created_at,
-          'last_activity', wi.last_activity
+          'id', instances.id,
+          'instance_name', instances.instance_name,
+          'status', instances.status,
+          'phone_number', instances.phone_number,
+          'created_at', instances.created_at,
+          'last_activity', instances.last_activity
         )
-      ) FROM whatsapp_instances wi WHERE wi.user_id = u.id AND wi.is_active = true),
+      ) FROM whatsapp_instances instances WHERE instances.user_id = u.id AND instances.is_active = true),
       '[]'::jsonb
     ) as whatsapp_instances
   FROM auth.users u
@@ -122,14 +122,14 @@ BEGIN
     COALESCE(
       (SELECT jsonb_agg(
         jsonb_build_object(
-          'id', wi.id,
-          'instance_name', wi.instance_name,
-          'status', wi.status,
-          'phone_number', wi.phone_number,
-          'created_at', wi.created_at,
-          'last_activity', wi.last_activity
+          'id', instances.id,
+          'instance_name', instances.instance_name,
+          'status', instances.status,
+          'phone_number', instances.phone_number,
+          'created_at', instances.created_at,
+          'last_activity', instances.last_activity
         )
-      ) FROM whatsapp_instances wi WHERE wi.user_id = u.id AND wi.is_active = true),
+      ) FROM whatsapp_instances instances WHERE instances.user_id = u.id AND instances.is_active = true),
       '[]'::jsonb
     ) as whatsapp_instances
   FROM auth.users u
