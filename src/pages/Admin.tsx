@@ -107,7 +107,7 @@ export default function Admin() {
           whatsapp_instances: []
         },
         {
-          id: 'b6558e4e-4860-466f-8c7c-1461b...',
+          id: 'b6558e4e-4860-466f-8c7c-1461b677401',
           email: 'ottocursos@gmail.com',
           name: 'Otto',
           created_at: '2025-08-15T00:29:44.991Z',
@@ -115,7 +115,7 @@ export default function Admin() {
           whatsapp_instances: []
         },
         {
-          id: '6b6baed2-7ec5-4189-94c7-ee01d...',
+          id: '6b6baed2-7ec5-4189-94c7-ee01db677401',
           email: 'yurilucardo@gmail.com',
           name: 'Yuri Luçardo',
           created_at: '2025-08-17T16:15:52.928Z',
