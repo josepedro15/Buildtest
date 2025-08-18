@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -24,7 +25,8 @@ import {
   RefreshCw,
   Eye,
   Settings,
-  Crown
+  Crown,
+  Loader2
 } from 'lucide-react';
 
 interface UserData {
@@ -52,8 +54,11 @@ export default function Admin() {
   
   const [users, setUsers] = useState<UserData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'with-whatsapp' | 'without-whatsapp'>('all');
+  const [sortBy, setSortBy] = useState<'name' | 'email' | 'created_at'>('created_at');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   // IDs dos administradores autorizados
   const adminUserIds = [
@@ -83,10 +88,16 @@ export default function Admin() {
 
 
 
-  const loadUsers = async () => {
-    setLoading(true);
+  const loadUsers = useCallback(async (isRefresh = false) => {
+    if (isRefresh) {
+      setRefreshing(true);
+    } else {
+      setLoading(true);
+    }
+
     try {
-      console.log('Carregando todos os usuários...');
+      // Simular delay para melhor UX (remover em produção se necessário)
+      await new Promise(resolve => setTimeout(resolve, 300));
       
       // Criar lista de usuários conhecidos com dados reais
       const knownUsers: UserData[] = [
@@ -134,8 +145,6 @@ export default function Admin() {
         console.error('Erro ao carregar instâncias:', instancesError);
       }
 
-      console.log('Instâncias encontradas:', instancesData?.length || 0);
-
       // Adicionar instâncias do WhatsApp aos usuários
       const usersWithInstances = knownUsers.map(user => {
         const userInstances = (instancesData || []).filter(
@@ -155,14 +164,15 @@ export default function Admin() {
         };
       });
 
-      console.log('Usuários carregados:', usersWithInstances.length);
       setUsers(usersWithInstances);
       
-      toast({
-        title: "Sucesso",
-        description: `Carregados ${usersWithInstances.length} usuários com dados reais.`,
-        variant: "default"
-      });
+      if (!isRefresh) {
+        toast({
+          title: "Sucesso",
+          description: `Carregados ${usersWithInstances.length} usuários com dados reais.`,
+          variant: "default"
+        });
+      }
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
       toast({
@@ -172,22 +182,57 @@ export default function Admin() {
       });
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
-  };
+  }, [toast]);
 
-  const filteredUsers = users.filter(userData => {
-    const matchesSearch = userData.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         userData.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (userData.name && userData.name.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-    const matchesFilter = filterStatus === 'all' ||
-                         (filterStatus === 'with-whatsapp' && userData.whatsapp_instances.length > 0) ||
-                         (filterStatus === 'without-whatsapp' && userData.whatsapp_instances.length === 0);
-    
-    return matchesSearch && matchesFilter;
-  });
+  const filteredAndSortedUsers = useMemo(() => {
+    let filtered = users.filter(userData => {
+      const matchesSearch = userData.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           userData.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           (userData.name && userData.name.toLowerCase().includes(searchTerm.toLowerCase()));
+      
+      const matchesFilter = filterStatus === 'all' ||
+                           (filterStatus === 'with-whatsapp' && userData.whatsapp_instances.length > 0) ||
+                           (filterStatus === 'without-whatsapp' && userData.whatsapp_instances.length === 0);
+      
+      return matchesSearch && matchesFilter;
+    });
 
-  const getStatusIcon = (status: string) => {
+    // Ordenação
+    filtered.sort((a, b) => {
+      let aValue: string | number;
+      let bValue: string | number;
+
+      switch (sortBy) {
+        case 'name':
+          aValue = a.name || '';
+          bValue = b.name || '';
+          break;
+        case 'email':
+          aValue = a.email;
+          bValue = b.email;
+          break;
+        case 'created_at':
+          aValue = new Date(a.created_at).getTime();
+          bValue = new Date(b.created_at).getTime();
+          break;
+        default:
+          aValue = new Date(a.created_at).getTime();
+          bValue = new Date(b.created_at).getTime();
+      }
+
+      if (sortOrder === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
+
+    return filtered;
+  }, [users, searchTerm, filterStatus, sortBy, sortOrder]);
+
+  const getStatusIcon = useCallback((status: string) => {
     switch (status) {
       case 'connected':
         return <Wifi className="h-4 w-4 text-green-500" />;
@@ -198,9 +243,9 @@ export default function Admin() {
       default:
         return <WifiOff className="h-4 w-4 text-gray-400" />;
     }
-  };
+  }, []);
 
-  const getStatusText = (status: string) => {
+  const getStatusText = useCallback((status: string) => {
     switch (status) {
       case 'connected':
         return 'Conectado';
@@ -211,9 +256,9 @@ export default function Admin() {
       default:
         return 'Desconhecido';
     }
-  };
+  }, []);
 
-  const formatDate = (dateString: string) => {
+  const formatDate = useCallback((dateString: string) => {
     return new Date(dateString).toLocaleDateString('pt-BR', {
       day: '2-digit',
       month: '2-digit',
@@ -221,7 +266,7 @@ export default function Admin() {
       hour: '2-digit',
       minute: '2-digit'
     });
-  };
+  }, []);
 
   if (!user || !adminUserIds.includes(user.id)) {
     return null;
@@ -262,134 +307,181 @@ export default function Admin() {
       </header>
 
       <div className="container mx-auto px-4 py-8 space-y-8">
-        {/* Estatísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
-                  <Users className="h-5 w-5 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Total de Usuários</p>
-                  <p className="text-2xl font-bold">{users.length}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                            {/* Estatísticas */}
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                      {loading ? (
+                        // Skeletons durante carregamento
+                        Array.from({ length: 4 }).map((_, index) => (
+                          <Card key={index} className="border-border/50 bg-card/50 backdrop-blur-sm">
+                            <CardContent className="p-6">
+                              <div className="flex items-center gap-3">
+                                <Skeleton className="h-9 w-9 rounded-lg" />
+                                <div className="space-y-2">
+                                  <Skeleton className="h-4 w-20" />
+                                  <Skeleton className="h-8 w-12" />
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))
+                      ) : (
+                        <>
+                          <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+                            <CardContent className="p-6">
+                              <div className="flex items-center gap-3">
+                                <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
+                                  <Users className="h-5 w-5 text-blue-600" />
+                                </div>
+                                <div>
+                                  <p className="text-sm text-muted-foreground">Total de Usuários</p>
+                                  <p className="text-2xl font-bold">{users.length}</p>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
 
-          <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-green-100 dark:bg-green-900/50 rounded-lg">
-                  <MessageSquare className="h-5 w-5 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Com WhatsApp</p>
-                  <p className="text-2xl font-bold">
-                    {users.filter(u => u.whatsapp_instances.length > 0).length}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                          <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+                            <CardContent className="p-6">
+                              <div className="flex items-center gap-3">
+                                <div className="p-2 bg-green-100 dark:bg-green-900/50 rounded-lg">
+                                  <MessageSquare className="h-5 w-5 text-green-600" />
+                                </div>
+                                <div>
+                                  <p className="text-sm text-muted-foreground">Com WhatsApp</p>
+                                  <p className="text-2xl font-bold">
+                                    {users.filter(u => u.whatsapp_instances.length > 0).length}
+                                  </p>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
 
-          <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-orange-100 dark:bg-orange-900/50 rounded-lg">
-                  <Wifi className="h-5 w-5 text-orange-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Conectados</p>
-                  <p className="text-2xl font-bold">
-                    {users.reduce((acc, user) => 
-                      acc + user.whatsapp_instances.filter(i => i.status === 'connected').length, 0
-                    )}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                          <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+                            <CardContent className="p-6">
+                              <div className="flex items-center gap-3">
+                                <div className="p-2 bg-orange-100 dark:bg-orange-900/50 rounded-lg">
+                                  <Wifi className="h-5 w-5 text-orange-600" />
+                                </div>
+                                <div>
+                                  <p className="text-sm text-muted-foreground">Conectados</p>
+                                  <p className="text-2xl font-bold">
+                                    {users.reduce((acc, user) => 
+                                      acc + user.whatsapp_instances.filter(i => i.status === 'connected').length, 0
+                                    )}
+                                  </p>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
 
-          <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-purple-100 dark:bg-purple-900/50 rounded-lg">
-                  <Activity className="h-5 w-5 text-purple-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Ativos Hoje</p>
-                  <p className="text-2xl font-bold">
-                    {users.filter(u => {
-                      const today = new Date().toDateString();
-                      return u.last_sign_in_at && new Date(u.last_sign_in_at).toDateString() === today;
-                    }).length}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                          <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+                            <CardContent className="p-6">
+                              <div className="flex items-center gap-3">
+                                <div className="p-2 bg-purple-100 dark:bg-purple-900/50 rounded-lg">
+                                  <Activity className="h-5 w-5 text-purple-600" />
+                                </div>
+                                <div>
+                                  <p className="text-sm text-muted-foreground">Ativos Hoje</p>
+                                  <p className="text-2xl font-bold">
+                                    {users.filter(u => {
+                                      const today = new Date().toDateString();
+                                      return u.last_sign_in_at && new Date(u.last_sign_in_at).toDateString() === today;
+                                    }).length}
+                                  </p>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </>
+                      )}
+                    </div>
 
-        {/* Filtros e Busca */}
-        <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Filter className="h-5 w-5 text-primary" />
-              Filtros e Busca
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Buscar por nome, email ou ID..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-              
-              <div className="flex gap-2">
-                <Button
-                  variant={filterStatus === 'all' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setFilterStatus('all')}
-                >
-                  Todos
-                </Button>
-                <Button
-                  variant={filterStatus === 'with-whatsapp' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setFilterStatus('with-whatsapp')}
-                >
-                  Com WhatsApp
-                </Button>
-                <Button
-                  variant={filterStatus === 'without-whatsapp' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setFilterStatus('without-whatsapp')}
-                >
-                  Sem WhatsApp
-                </Button>
-              </div>
+                            {/* Filtros e Busca */}
+                    <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <Filter className="h-5 w-5 text-primary" />
+                          Filtros e Busca
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          {/* Busca */}
+                          <div className="relative">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              placeholder="Buscar por nome, email ou ID..."
+                              value={searchTerm}
+                              onChange={(e) => setSearchTerm(e.target.value)}
+                              className="pl-10"
+                            />
+                          </div>
+                          
+                          {/* Filtros e Controles */}
+                          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                            {/* Filtros */}
+                            <div className="flex gap-2">
+                              <Button
+                                variant={filterStatus === 'all' ? 'default' : 'outline'}
+                                size="sm"
+                                onClick={() => setFilterStatus('all')}
+                              >
+                                Todos
+                              </Button>
+                              <Button
+                                variant={filterStatus === 'with-whatsapp' ? 'default' : 'outline'}
+                                size="sm"
+                                onClick={() => setFilterStatus('with-whatsapp')}
+                              >
+                                Com WhatsApp
+                              </Button>
+                              <Button
+                                variant={filterStatus === 'without-whatsapp' ? 'default' : 'outline'}
+                                size="sm"
+                                onClick={() => setFilterStatus('without-whatsapp')}
+                              >
+                                Sem WhatsApp
+                              </Button>
+                            </div>
 
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={loadUsers}
-                disabled={loading}
-              >
-                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                Atualizar
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+                            {/* Ordenação */}
+                            <div className="flex gap-2">
+                              <select
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value as 'name' | 'email' | 'created_at')}
+                                className="px-3 py-2 text-sm border border-border rounded-md bg-background"
+                              >
+                                <option value="created_at">Data de Criação</option>
+                                <option value="name">Nome</option>
+                                <option value="email">Email</option>
+                              </select>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                              >
+                                {sortOrder === 'asc' ? '↑' : '↓'}
+                              </Button>
+                            </div>
+
+                            {/* Atualizar */}
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => loadUsers(true)}
+                              disabled={refreshing}
+                            >
+                              {refreshing ? (
+                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                              ) : (
+                                <RefreshCw className="h-4 w-4 mr-2" />
+                              )}
+                              Atualizar
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
 
         {/* Lista de Usuários */}
         <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
@@ -398,24 +490,46 @@ export default function Admin() {
               <Users className="h-5 w-5 text-primary" />
               Lista de Usuários
             </CardTitle>
-            <CardDescription>
-              {filteredUsers.length} usuário(s) encontrado(s)
-            </CardDescription>
+                                    <CardDescription>
+                          {filteredAndSortedUsers.length} usuário(s) encontrado(s)
+                        </CardDescription>
           </CardHeader>
           <CardContent>
-            {loading ? (
-              <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                <span className="ml-3 text-muted-foreground">Carregando usuários...</span>
-              </div>
-            ) : filteredUsers.length === 0 ? (
+                                    {loading ? (
+                          <div className="space-y-4">
+                            {Array.from({ length: 3 }).map((_, index) => (
+                              <div key={index} className="p-4 border border-border/50 rounded-lg bg-muted/20">
+                                <div className="flex items-start justify-between">
+                                  <div className="flex-1">
+                                    <div className="flex items-center gap-3 mb-2">
+                                      <Skeleton className="h-8 w-8 rounded-lg" />
+                                      <div className="space-y-2">
+                                        <Skeleton className="h-4 w-48" />
+                                        <Skeleton className="h-3 w-32" />
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-4 mb-3">
+                                      <Skeleton className="h-3 w-24" />
+                                      <Skeleton className="h-3 w-28" />
+                                    </div>
+                                    <Skeleton className="h-3 w-40" />
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <Skeleton className="h-8 w-8 rounded" />
+                                    <Skeleton className="h-8 w-8 rounded" />
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                                    ) : filteredAndSortedUsers.length === 0 ? (
               <div className="text-center py-12">
                 <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <p className="text-muted-foreground">Nenhum usuário encontrado</p>
               </div>
             ) : (
-              <div className="space-y-4">
-                {filteredUsers.map((userData) => (
+                                        <div className="space-y-4">
+                            {filteredAndSortedUsers.map((userData) => (
                   <div
                     key={userData.id}
                     className="p-4 border border-border/50 rounded-lg bg-muted/20 hover:bg-muted/30 transition-colors"
