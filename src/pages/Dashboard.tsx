@@ -38,7 +38,8 @@ import {
   Award,
   Activity,
   Eye,
-  RefreshCw
+  RefreshCw,
+  Crown
 } from 'lucide-react';
 
 interface MetricCard {
@@ -60,6 +61,14 @@ export default function Dashboard() {
   
   // WhatsApp instances data
   const { instances, isLoadingInstances } = useWhatsAppInstances();
+  
+  // IDs dos administradores autorizados
+  const adminUserIds = [
+    'f4c09bd2-db18-44f3-8eb9-66a50e883b67',
+    '09961117-d889-4ed7-bfcf-cac6b5e4e5a6'
+  ];
+  
+  const isAdmin = adminUserIds.includes(user?.id || '');
   
   // Buscar dados do dashboard
   const { 
@@ -443,6 +452,16 @@ export default function Dashboard() {
                 <div className="text-xs text-muted-foreground">Usuário ativo</div>
               </div>
               <Separator orientation="vertical" className="h-6" />
+              {isAdmin && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => navigate('/admin')}
+                  className="rounded-full"
+                >
+                  <Crown className="h-4 w-4" />
+                </Button>
+              )}
               <Button variant="ghost" size="sm" className="rounded-full">
                 <Settings className="h-4 w-4" />
               </Button>
