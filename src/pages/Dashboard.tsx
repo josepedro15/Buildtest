@@ -672,7 +672,7 @@ export default function Dashboard() {
         </div>
 
         {/* Seção de Destaques e Ações */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {/* Destaque do Período */}
           <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
             <CardHeader>
@@ -681,50 +681,50 @@ export default function Dashboard() {
                 Destaque do Período
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3">
               {dashboardData?.melhor_atendimento_cliente && (
-                <div className="p-4 bg-emerald-50 dark:bg-emerald-950/20 rounded-xl border border-emerald-200 dark:border-emerald-800/50">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="font-semibold text-emerald-800 dark:text-emerald-200 flex items-center gap-2">
-                      <Star className="h-4 w-4" />
+                <div className="p-3 bg-emerald-50 dark:bg-emerald-950/20 rounded-lg border border-emerald-200 dark:border-emerald-800/50">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-semibold text-emerald-800 dark:text-emerald-200 flex items-center gap-2 text-sm">
+                      <Star className="h-3 w-3" />
                       Melhor Atendimento
                     </span>
-                    <Badge variant="default" className="bg-emerald-500 hover:bg-emerald-600">
+                    <Badge variant="default" className="bg-emerald-500 hover:bg-emerald-600 text-xs">
                       {dashboardData.melhor_atendimento_nota?.toFixed(1) || '5.0'}★
                     </Badge>
                   </div>
-                  <div className="text-sm text-emerald-700 dark:text-emerald-300 mb-2 font-medium">
+                  <div className="text-xs text-emerald-700 dark:text-emerald-300 mb-1 font-medium">
                     {dashboardData.melhor_atendimento_cliente}
                   </div>
-                  <div className="text-xs text-emerald-600 dark:text-emerald-400">
+                  <div className="text-xs text-emerald-600 dark:text-emerald-400 line-clamp-2">
                     {dashboardData.melhor_atendimento_observacao}
                   </div>
                 </div>
               )}
 
               {dashboardData?.atendimento_critico_cliente && (
-                <div className="p-4 bg-red-50 dark:bg-red-950/20 rounded-xl border border-red-200 dark:border-red-800/50">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="font-semibold text-red-800 dark:text-red-200 flex items-center gap-2">
-                      <AlertCircle className="h-4 w-4" />
+                <div className="p-3 bg-red-50 dark:bg-red-950/20 rounded-lg border border-red-200 dark:border-red-800/50">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-semibold text-red-800 dark:text-red-200 flex items-center gap-2 text-sm">
+                      <AlertCircle className="h-3 w-3" />
                       Atendimento Crítico
                     </span>
-                    <Badge variant="destructive">
+                    <Badge variant="destructive" className="text-xs">
                       {dashboardData.atendimento_critico_nota?.toFixed(1) || '1.5'}★
                     </Badge>
                   </div>
-                  <div className="text-sm text-red-700 dark:text-red-300 mb-2 font-medium">
+                  <div className="text-xs text-red-700 dark:text-red-300 mb-1 font-medium">
                     {dashboardData.atendimento_critico_cliente}
                   </div>
-                  <div className="text-xs text-red-600 dark:text-red-400">
+                  <div className="text-xs text-red-600 dark:text-red-400 line-clamp-2">
                     {dashboardData.atendimento_critico_observacao}
                   </div>
                 </div>
               )}
 
               {!dashboardData?.melhor_atendimento_cliente && !dashboardData?.atendimento_critico_cliente && (
-                <div className="p-4 bg-muted/50 rounded-xl border border-border/50 text-center">
-                  <div className="text-sm text-muted-foreground">Nenhum destaque registrado ainda.</div>
+                <div className="p-3 bg-muted/50 rounded-lg border border-border/50 text-center">
+                  <div className="text-xs text-muted-foreground">Nenhum destaque registrado ainda.</div>
                 </div>
               )}
             </CardContent>
@@ -738,24 +738,24 @@ export default function Dashboard() {
                 Automação Sugerida
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-2">
               {dashboardData?.automacao_sugerida?.map((automacao, index) => {
                 const [title, description] = automacao.split(': ');
                 return (
-                  <div key={index} className="p-3 border border-border/50 rounded-lg bg-muted/20">
+                  <div key={index} className="p-2 border border-border/50 rounded-lg bg-muted/20">
                     <div className="flex items-start gap-2">
-                      <Zap className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <Zap className="h-3 w-3 text-primary mt-0.5 flex-shrink-0" />
                       <div className="flex-1">
-                        <div className="font-medium text-sm">{title}</div>
-                        <div className="text-xs text-muted-foreground mt-1">{description}</div>
+                        <div className="font-medium text-xs">{title}</div>
+                        <div className="text-xs text-muted-foreground mt-1 line-clamp-2">{description}</div>
                       </div>
                     </div>
                   </div>
                 );
               }) || (
-                <div className="p-4 border border-border/50 rounded-lg bg-muted/20 text-center">
-                  <Bot className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                  <div className="font-medium text-sm">Nenhuma automação sugerida</div>
+                <div className="p-3 border border-border/50 rounded-lg bg-muted/20 text-center">
+                  <Bot className="h-6 w-6 text-muted-foreground mx-auto mb-2" />
+                  <div className="font-medium text-xs">Nenhuma automação sugerida</div>
                   <div className="text-xs text-muted-foreground mt-1">As sugestões aparecerão conforme os dados forem analisados</div>
                 </div>
               )}
@@ -770,11 +770,11 @@ export default function Dashboard() {
                 Próximas Ações
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-2">
               {tasksData.map((task) => (
-                <div key={task.id} className="flex items-center justify-between p-3 border border-border/50 rounded-lg bg-muted/20">
+                <div key={task.id} className="flex items-center justify-between p-2 border border-border/50 rounded-lg bg-muted/20">
                   <div className="flex-1">
-                    <div className="font-medium text-sm">{task.title}</div>
+                    <div className="font-medium text-xs line-clamp-1">{task.title}</div>
                     <div className="flex items-center gap-2 mt-1">
                       <Badge 
                         variant={
