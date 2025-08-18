@@ -84,21 +84,80 @@ export default function Admin() {
   const loadUsers = async () => {
     setLoading(true);
     try {
-      // Usar a função RPC para buscar todos os usuários com suas instâncias
+      // Primeiro, tentar usar a função RPC simplificada
       const { data: usersData, error: usersError } = await supabase
-        .rpc('get_all_users_with_instances');
+        .rpc('get_all_users_with_instances_simple');
 
       if (usersError) {
-        console.error('Erro ao carregar usuários:', usersError);
+        console.error('Erro ao carregar usuários via RPC:', usersError);
+        
+        // Fallback: buscar dados básicos de usuários através das instâncias do WhatsApp
+        console.log('Tentando fallback: buscar usuários através das instâncias...');
+        
+        const { data: instancesData, error: instancesError } = await supabase
+          .from('whatsapp_instances')
+          .select('*')
+          .eq('is_active', true);
+
+        if (instancesError) {
+          console.error('Erro ao carregar instâncias:', instancesError);
+          toast({
+            title: "Erro",
+            description: "Não foi possível carregar a lista de usuários. Verifique se as funções SQL foram aplicadas.",
+            variant: "destructive"
+          });
+          return;
+        }
+
+        // Criar lista de usuários a partir das instâncias
+        const userIds = [...new Set((instancesData || []).map((instance: any) => instance.user_id))];
+        
+        // Adicionar IDs dos administradores se não estiverem na lista
+        adminUserIds.forEach(adminId => {
+          if (!userIds.includes(adminId)) {
+            userIds.push(adminId);
+          }
+        });
+
+        // Para cada usuário, buscar informações básicas
+        const usersWithInstances: UserData[] = [];
+        
+        for (const userId of userIds) {
+          // Buscar instâncias do usuário
+          const userInstances = (instancesData || []).filter(
+            (instance: any) => instance.user_id === userId
+          );
+
+          // Buscar informações do usuário (simulado por enquanto)
+          const userData: UserData = {
+            id: userId,
+            email: `user-${userId.substring(0, 8)}@example.com`, // Placeholder
+            name: null, // Placeholder
+            created_at: new Date().toISOString(), // Placeholder
+            last_sign_in_at: new Date().toISOString(), // Placeholder
+            whatsapp_instances: userInstances.map((instance: any) => ({
+              id: instance.id,
+              instance_name: instance.instance_name,
+              status: instance.status,
+              phone_number: instance.phone_number,
+              created_at: instance.created_at,
+              last_activity: instance.last_activity
+            }))
+          };
+
+          usersWithInstances.push(userData);
+        }
+
+        setUsers(usersWithInstances);
         toast({
-          title: "Erro",
-          description: "Não foi possível carregar a lista de usuários.",
-          variant: "destructive"
+          title: "Aviso",
+          description: "Usando dados limitados. Aplique as funções SQL para dados completos.",
+          variant: "default"
         });
         return;
       }
 
-      // Processar os dados retornados
+      // Processar os dados retornados pela função RPC
       const usersWithInstances: UserData[] = (usersData || []).map((userData: any) => ({
         id: userData.id,
         email: userData.email,
