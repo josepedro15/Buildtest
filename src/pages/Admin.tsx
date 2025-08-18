@@ -81,90 +81,52 @@ export default function Admin() {
     loadUsers();
   }, [user, navigate]);
 
-  const loadUsers = async () => {
-    setLoading(true);
-    try {
-      // Primeiro, tentar usar a função RPC simplificada
-      const { data: usersData, error: usersError } = await supabase
-        .rpc('get_all_users_with_instances_simple');
+  const loadBasicUsers = async () => {
+    // Último recurso: buscar dados básicos de usuários através das instâncias do WhatsApp
+    console.log('Usando último recurso: buscar usuários através das instâncias...');
+    
+    const { data: instancesData, error: instancesError } = await supabase
+      .from('whatsapp_instances')
+      .select('*')
+      .eq('is_active', true);
 
-      if (usersError) {
-        console.error('Erro ao carregar usuários via RPC:', usersError);
-        
-        // Fallback: buscar dados básicos de usuários através das instâncias do WhatsApp
-        console.log('Tentando fallback: buscar usuários através das instâncias...');
-        
-        const { data: instancesData, error: instancesError } = await supabase
-          .from('whatsapp_instances')
-          .select('*')
-          .eq('is_active', true);
+    if (instancesError) {
+      console.error('Erro ao carregar instâncias:', instancesError);
+      toast({
+        title: "Erro",
+        description: "Não foi possível carregar a lista de usuários. Verifique se as funções SQL foram aplicadas.",
+        variant: "destructive"
+      });
+      return;
+    }
 
-        if (instancesError) {
-          console.error('Erro ao carregar instâncias:', instancesError);
-          toast({
-            title: "Erro",
-            description: "Não foi possível carregar a lista de usuários. Verifique se as funções SQL foram aplicadas.",
-            variant: "destructive"
-          });
-          return;
-        }
-
-        // Criar lista de usuários a partir das instâncias
-        const userIds = [...new Set((instancesData || []).map((instance: any) => instance.user_id))];
-        
-        // Adicionar IDs dos administradores se não estiverem na lista
-        adminUserIds.forEach(adminId => {
-          if (!userIds.includes(adminId)) {
-            userIds.push(adminId);
-          }
-        });
-
-        // Para cada usuário, buscar informações básicas
-        const usersWithInstances: UserData[] = [];
-        
-        for (const userId of userIds) {
-          // Buscar instâncias do usuário
-          const userInstances = (instancesData || []).filter(
-            (instance: any) => instance.user_id === userId
-          );
-
-          // Buscar informações do usuário (simulado por enquanto)
-          const userData: UserData = {
-            id: userId,
-            email: `user-${userId.substring(0, 8)}@example.com`, // Placeholder
-            name: null, // Placeholder
-            created_at: new Date().toISOString(), // Placeholder
-            last_sign_in_at: new Date().toISOString(), // Placeholder
-            whatsapp_instances: userInstances.map((instance: any) => ({
-              id: instance.id,
-              instance_name: instance.instance_name,
-              status: instance.status,
-              phone_number: instance.phone_number,
-              created_at: instance.created_at,
-              last_activity: instance.last_activity
-            }))
-          };
-
-          usersWithInstances.push(userData);
-        }
-
-        setUsers(usersWithInstances);
-        toast({
-          title: "Aviso",
-          description: "Usando dados limitados. Aplique as funções SQL para dados completos.",
-          variant: "default"
-        });
-        return;
+    // Criar lista de usuários a partir das instâncias
+    const userIds = [...new Set((instancesData || []).map((instance: any) => instance.user_id))];
+    
+    // Adicionar IDs dos administradores se não estiverem na lista
+    adminUserIds.forEach(adminId => {
+      if (!userIds.includes(adminId)) {
+        userIds.push(adminId);
       }
+    });
 
-      // Processar os dados retornados pela função RPC
-      const usersWithInstances: UserData[] = (usersData || []).map((userData: any) => ({
-        id: userData.id,
-        email: userData.email,
-        name: userData.raw_user_meta_data?.full_name || userData.raw_user_meta_data?.name || null,
-        created_at: userData.created_at,
-        last_sign_in_at: userData.last_sign_in_at,
-        whatsapp_instances: (userData.whatsapp_instances || []).map((instance: any) => ({
+    // Para cada usuário, buscar informações básicas
+    const usersWithInstances: UserData[] = [];
+    
+    for (const userId of userIds) {
+      // Buscar instâncias do usuário
+      const userInstances = (instancesData || []).filter(
+        (instance: any) => instance.user_id === userId
+      );
+
+      // Buscar informações do usuário (simulado por enquanto)
+      const userData: UserData = {
+        id: userId,
+        email: `user-${userId.substring(0, 8)}@example.com`, // Placeholder
+        name: null, // Placeholder
+        created_at: new Date().toISOString(), // Placeholder
+        last_sign_in_at: new Date().toISOString(), // Placeholder
+        whatsapp_instances: userInstances.map((instance: any) => ({
           id: instance.id,
           instance_name: instance.instance_name,
           status: instance.status,
@@ -172,7 +134,127 @@ export default function Admin() {
           created_at: instance.created_at,
           last_activity: instance.last_activity
         }))
-      }));
+      };
+
+      usersWithInstances.push(userData);
+    }
+
+    setUsers(usersWithInstances);
+    toast({
+      title: "Aviso",
+      description: "Usando dados limitados. Aplique as funções SQL para dados completos.",
+      variant: "default"
+    });
+  };
+
+  const loadUsers = async () => {
+    setLoading(true);
+    try {
+      // Primeiro, tentar usar a função RPC básica
+      const { data: usersData, error: usersError } = await supabase
+        .rpc('get_all_users_basic');
+
+      if (usersError) {
+        console.error('Erro ao carregar usuários via RPC:', usersError);
+        
+        // Fallback: buscar todos os usuários através da tabela profiles
+        console.log('Tentando fallback: buscar usuários através da tabela profiles...');
+        
+        try {
+          // Primeiro, tentar buscar da tabela profiles
+          const { data: profilesData, error: profilesError } = await supabase
+            .from('profiles')
+            .select('*');
+
+          if (profilesError) {
+            console.error('Erro ao carregar profiles:', profilesError);
+            // Se não conseguir carregar profiles, usar dados básicos
+            await loadBasicUsers();
+            return;
+          }
+
+          // Buscar instâncias do WhatsApp para cada usuário
+          const { data: instancesData, error: instancesError } = await supabase
+            .from('whatsapp_instances')
+            .select('*')
+            .eq('is_active', true);
+
+          if (instancesError) {
+            console.error('Erro ao carregar instâncias:', instancesError);
+          }
+
+          // Processar dados dos profiles
+          const usersWithInstances: UserData[] = (profilesData || []).map((profile: any) => {
+            // Buscar instâncias do usuário
+            const userInstances = (instancesData || []).filter(
+              (instance: any) => instance.user_id === profile.user_id
+            );
+
+            return {
+              id: profile.user_id,
+              email: profile.email || `user-${profile.user_id.substring(0, 8)}@example.com`,
+              name: profile.full_name,
+              created_at: profile.created_at,
+              last_sign_in_at: profile.updated_at, // Usar updated_at como aproximação
+              whatsapp_instances: userInstances.map((instance: any) => ({
+                id: instance.id,
+                instance_name: instance.instance_name,
+                status: instance.status,
+                phone_number: instance.phone_number,
+                created_at: instance.created_at,
+                last_activity: instance.last_activity
+              }))
+            };
+          });
+
+          setUsers(usersWithInstances);
+          toast({
+            title: "Aviso",
+            description: "Usando dados da tabela profiles. Aplique as funções SQL para dados completos.",
+            variant: "default"
+          });
+          return;
+        } catch (error) {
+          console.error('Erro no fallback com profiles:', error);
+          // Se tudo falhar, usar dados básicos
+          await loadBasicUsers();
+          return;
+        }
+      }
+
+      // Processar os dados retornados pela função RPC básica
+      // Buscar instâncias do WhatsApp para cada usuário
+      const { data: instancesData, error: instancesError } = await supabase
+        .from('whatsapp_instances')
+        .select('*')
+        .eq('is_active', true);
+
+      if (instancesError) {
+        console.error('Erro ao carregar instâncias:', instancesError);
+      }
+
+      const usersWithInstances: UserData[] = (usersData || []).map((userData: any) => {
+        // Buscar instâncias do usuário
+        const userInstances = (instancesData || []).filter(
+          (instance: any) => instance.user_id === userData.id
+        );
+
+        return {
+          id: userData.id,
+          email: userData.email,
+          name: userData.raw_user_meta_data?.full_name || userData.raw_user_meta_data?.name || null,
+          created_at: userData.created_at,
+          last_sign_in_at: userData.last_sign_in_at,
+          whatsapp_instances: userInstances.map((instance: any) => ({
+            id: instance.id,
+            instance_name: instance.instance_name,
+            status: instance.status,
+            phone_number: instance.phone_number,
+            created_at: instance.created_at,
+            last_activity: instance.last_activity
+          }))
+        };
+      });
 
       setUsers(usersWithInstances);
     } catch (error) {
