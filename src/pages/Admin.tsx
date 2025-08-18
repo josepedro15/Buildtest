@@ -150,9 +150,9 @@ export default function Admin() {
   const loadUsers = async () => {
     setLoading(true);
     try {
-      // Primeiro, tentar usar a função RPC básica
+      // Primeiro, tentar usar a função RPC que funciona
       const { data: usersData, error: usersError } = await supabase
-        .rpc('get_all_users_basic');
+        .rpc('get_all_users_working');
 
       if (usersError) {
         console.error('Erro ao carregar usuários via RPC:', usersError);
@@ -236,15 +236,15 @@ export default function Admin() {
       const usersWithInstances: UserData[] = (usersData || []).map((userData: any) => {
         // Buscar instâncias do usuário
         const userInstances = (instancesData || []).filter(
-          (instance: any) => instance.user_id === userData.id
+          (instance: any) => instance.user_id === userData.user_id
         );
 
         return {
-          id: userData.id,
-          email: userData.email,
-          name: userData.raw_user_meta_data?.full_name || userData.raw_user_meta_data?.name || null,
-          created_at: userData.created_at,
-          last_sign_in_at: userData.last_sign_in_at,
+          id: userData.user_id,
+          email: userData.user_email,
+          name: userData.user_meta_data?.full_name || userData.user_meta_data?.name || null,
+          created_at: userData.user_created_at,
+          last_sign_in_at: userData.user_last_sign_in_at,
           whatsapp_instances: userInstances.map((instance: any) => ({
             id: instance.id,
             instance_name: instance.instance_name,

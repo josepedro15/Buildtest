@@ -27,13 +27,13 @@ BEGIN
 
   RETURN QUERY
   SELECT 
-    auth_users.id,
-    auth_users.email,
-    auth_users.created_at,
-    auth_users.last_sign_in_at,
-    auth_users.raw_user_meta_data
-  FROM auth.users auth_users
-  ORDER BY auth_users.created_at DESC;
+    u.id,
+    u.email,
+    u.created_at,
+    u.last_sign_in_at,
+    u.raw_user_meta_data
+  FROM auth.users u
+  ORDER BY u.created_at DESC;
 END;
 $$;
 
