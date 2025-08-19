@@ -13,7 +13,6 @@ import { useDashboardData } from '@/hooks/useDashboardData';
 import { ExportModal } from '@/components/ExportModal';
 import { FilterModal } from '@/components/FilterModal';
 import { useWhatsAppInstances } from '@/hooks/useWhatsAppInstances';
-import { PredictiveAnalytics } from '@/components/PredictiveAnalytics';
 import { 
   MessageSquare, 
   TrendingUp, 
@@ -40,9 +39,7 @@ import {
   Activity,
   Eye,
   RefreshCw,
-  Crown,
-  Brain,
-  BrainCircuit
+  Crown
 } from 'lucide-react';
 
 interface MetricCard {
@@ -61,7 +58,6 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [showPredictiveAnalytics, setShowPredictiveAnalytics] = useState(false);
   
   // WhatsApp instances data
   const { instances, isLoadingInstances } = useWhatsAppInstances();
@@ -505,15 +501,6 @@ export default function Dashboard() {
             </div>
             <div className="flex gap-3">
               <Button 
-                variant="outline"
-                size="lg" 
-                onClick={() => setShowPredictiveAnalytics(!showPredictiveAnalytics)}
-                className="gap-2 border-primary/20 hover:border-primary/40"
-              >
-                <BrainCircuit className="h-4 w-4" />
-                {showPredictiveAnalytics ? 'Ocultar IA' : 'Análise Preditiva'}
-              </Button>
-              <Button 
                 onClick={() => navigate('/whatsapp-connect')}
                 size="lg" 
                 className="gap-2 bg-green-600 hover:bg-green-700"
@@ -878,17 +865,6 @@ export default function Dashboard() {
             </div>
           </CardContent>
         </Card>
-
-        {/* Análise Preditiva */}
-        {showPredictiveAnalytics && (
-          <section className="space-y-6">
-            <div className="flex items-center gap-3">
-              <Brain className="h-6 w-6 text-primary" />
-              <h2 className="text-2xl font-semibold">Análise Preditiva com IA</h2>
-            </div>
-            <PredictiveAnalytics />
-          </section>
-        )}
 
         {/* Footer melhorado */}
         <div className="text-center py-8 border-t border-border/50">
