@@ -94,28 +94,55 @@ export function useDashboardData(selectedDate?: Date) {
         throw currentError;
       }
 
-      // Se não há dados do usuário, busca dados de exemplo
+      // Se não há dados do usuário, retorna dados zerados
       if (!currentData) {
-        const { data: sampleData, error: sampleError } = await supabase
-          .from('dashboard_data')
-          .select('*')
-          .eq('user_id', '00000000-0000-0000-0000-000000000000')
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .single();
-
-        if (sampleError) {
-          if (sampleError.code === 'PGRST116') {
-            return null;
-          }
-          throw sampleError;
-        }
-
-        if (sampleData) {
-          const sampleWithComparison = { ...sampleData, user_id: user.id };
-          return await addComparisonData(sampleWithComparison, user.id, selectedDate);
-        }
-        return null;
+        const emptyData: DashboardData = {
+          id: '',
+          user_id: user.id,
+          periodo_inicio: new Date().toISOString().split('T')[0],
+          periodo_fim: new Date().toISOString().split('T')[0],
+          
+          // Métricas Principais - Zeradas
+          total_atendimentos: 0,
+          taxa_conversao: 0,
+          tempo_medio_resposta: 0,
+          nota_media_qualidade: 0,
+          
+          // Principais Intenções dos Clientes - Zeradas
+          intencao_compra: 0,
+          intencao_duvida_geral: 0,
+          intencao_reclamacao: 0,
+          intencao_suporte: 0,
+          intencao_orcamento: 0,
+          
+          // Insights de Performance - Vazios
+          insights_funcionou: [],
+          insights_atrapalhou: [],
+          
+          // Destaque do Período - Vazios
+          melhor_atendimento_cliente: null,
+          melhor_atendimento_observacao: null,
+          melhor_atendimento_nota: null,
+          atendimento_critico_cliente: null,
+          atendimento_critico_observacao: null,
+          atendimento_critico_nota: null,
+          
+          // Automação Sugerida - Vazia
+          automacao_sugerida: [],
+          
+          // Próximas Ações - Vazias
+          proximas_acoes: [],
+          
+          // Metas e Progresso - Vazias
+          meta_taxa_conversao: null,
+          meta_tempo_resposta: null,
+          meta_nota_qualidade: null,
+          
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+        
+        return await addComparisonData(emptyData, user.id, selectedDate);
       }
 
       // Buscar dados do dia anterior para comparação
@@ -156,17 +183,9 @@ async function addComparisonData(
   previousData?: DashboardData | null
 ): Promise<DashboardDataWithComparison> {
   
-  // Se não há dados anteriores, usar dados de exemplo ou zeros
+  // Se não há dados anteriores, usar zeros
   if (!previousData) {
-    const { data: samplePreviousData } = await supabase
-      .from('dashboard_data')
-      .select('*')
-      .eq('user_id', '00000000-0000-0000-0000-000000000000')
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single();
-
-    previousData = samplePreviousData || {
+    previousData = {
       total_atendimentos: 0,
       taxa_conversao: 0,
       tempo_medio_resposta: 0,
