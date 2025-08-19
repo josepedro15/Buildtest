@@ -818,60 +818,7 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Metas e Progresso */}
-        <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5 text-primary" />
-              Metas e Progresso
-            </CardTitle>
-            <CardDescription>
-              Acompanhe o progresso das suas metas de performance
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Taxa de Conversão</span>
-                  <span className="text-sm font-semibold text-muted-foreground">
-                    {dashboardData?.taxa_conversao?.toFixed(1) || 0}% / {dashboardData?.meta_taxa_conversao ? 'Meta definida' : '0%'}
-                  </span>
-                </div>
-                <Progress value={dashboardData?.taxa_conversao ? ((dashboardData.taxa_conversao / 30) * 100) : 0} className="h-3" />
-                <div className="text-xs text-muted-foreground">
-                  {dashboardData?.meta_taxa_conversao || 'Meta não definida'}
-                </div>
-              </div>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Tempo de Resposta</span>
-                  <span className="text-sm font-semibold text-muted-foreground">
-                    {dashboardData?.tempo_medio_resposta 
-                      ? `${Math.floor(dashboardData.tempo_medio_resposta / 60)}m ${dashboardData.tempo_medio_resposta % 60}s`
-                      : '0s'} / {dashboardData?.meta_tempo_resposta ? 'Meta definida' : '0s'}
-                  </span>
-                </div>
-                <Progress value={dashboardData?.tempo_medio_resposta ? Math.max(0, 100 - ((dashboardData.tempo_medio_resposta / 120) * 100)) : 0} className="h-3" />
-                <div className="text-xs text-muted-foreground">
-                  {dashboardData?.meta_tempo_resposta || 'Meta não definida'}
-                </div>
-              </div>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Nota de Qualidade</span>
-                  <span className="text-sm font-semibold text-muted-foreground">
-                    {dashboardData?.nota_media_qualidade?.toFixed(1) || 0} / {dashboardData?.meta_nota_qualidade ? 'Meta definida' : '0'}
-                  </span>
-                </div>
-                <Progress value={dashboardData?.nota_media_qualidade ? ((dashboardData.nota_media_qualidade / 4.5) * 100) : 0} className="h-3" />
-                <div className="text-xs text-muted-foreground">
-                  {dashboardData?.meta_nota_qualidade || 'Meta não definida'}
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+
 
         {/* Footer melhorado */}
         <div className="text-center py-8 border-t border-border/50">
