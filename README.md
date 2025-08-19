@@ -1,200 +1,119 @@
 # MetricaWhats - Analytics para WhatsApp
 
-Uma plataforma completa de analytics para WhatsApp Business que transforma atendimentos em insights poderosos.
+Uma plataforma completa de analytics para WhatsApp que transforma conversas em insights poderosos para otimização de vendas e automação inteligente.
 
 ## 🚀 Funcionalidades
 
-- **Dashboard em Tempo Real**: Métricas detalhadas de conversão, abandono e qualidade
-- **Análise de Intenções**: Identificação automática de intenções dos clientes
-- **Comparação Diária**: Análise comparativa com o dia anterior
-- **Exportação de Relatórios**: CSV, Excel e PDF com formatação profissional
-- **Filtros Avançados**: Filtros por data e período
-- **Automação Inteligente**: Sugestões de automação baseadas em IA
-- **Gestão de Equipe**: Comparação de performance entre atendentes
+- **📊 Dashboard Analytics**: Métricas em tempo real de atendimentos
+- **🤖 Conexão WhatsApp**: Integração via API Evolution
+- **📈 Relatórios Exportáveis**: CSV, Excel e PDF
+- **👥 Sistema de Usuários**: Autenticação e autorização
+- **🔧 Painel Admin**: Gerenciamento de instâncias
+- **📱 Interface Responsiva**: Design moderno e intuitivo
 
 ## 🛠️ Tecnologias
 
-- **Frontend**: React 18 + TypeScript + Vite
-- **UI**: shadcn/ui + Radix UI + Tailwind CSS
-- **Backend**: Supabase (PostgreSQL + Auth + Real-time)
-- **Estado**: TanStack Query + Context API
+- **Frontend**: React 18, TypeScript, Vite
+- **UI**: Tailwind CSS, Radix UI, shadcn/ui
+- **Backend**: Supabase (PostgreSQL, Auth, Real-time)
+- **Estado**: TanStack Query, Context API
 - **Validação**: Zod
-- **Testes**: Vitest + Testing Library
-- **Logging**: Sistema de logging centralizado
-- **Performance**: Lazy loading + Code splitting
+- **Testes**: Vitest, Testing Library
 
-## 🏗️ Arquitetura
+## 📁 Estrutura do Projeto
 
-### Estrutura do Projeto
 ```
 src/
-├── components/          # Componentes reutilizáveis
-│   ├── ui/             # Componentes base (shadcn/ui)
-│   └── __tests__/      # Testes de componentes
-├── contexts/           # Context API otimizado
-├── hooks/              # Custom hooks
-├── integrations/       # Integrações externas
-├── lib/                # Utilitários e configurações
-├── pages/              # Páginas da aplicação
-└── test/               # Configuração de testes
+├── components/
+│   ├── ui/                    # Componentes base (shadcn/ui)
+│   ├── features/              # Componentes específicos
+│   │   └── whatsapp/          # Componentes do WhatsApp
+│   └── layout/                # Header, Footer, etc.
+├── hooks/
+│   ├── features/              # Hooks específicos
+│   └── ui/                    # Hooks de UI
+├── pages/                     # Páginas da aplicação
+├── integrations/              # Integrações externas
+│   └── supabase/              # Cliente Supabase
+├── lib/                       # Utilitários
+├── contexts/                  # Contextos React
+└── test/                      # Configuração de testes
+
+database/
+├── migrations/                # Migrações do banco
+├── functions/                 # Funções SQL
+├── policies/                  # Políticas RLS
+├── seeds/                     # Dados iniciais
+└── supabase/                  # Configuração Supabase
+
+docs/                          # Documentação
 ```
 
-### Melhorias Implementadas
+## 🚀 Instalação
 
-#### 🔒 Segurança
-- ✅ Variáveis de ambiente configuradas
-- ✅ Validação com Zod em todos os formulários
-- ✅ Sanitização de dados
-- ✅ Error boundaries para captura de erros
-
-#### ⚡ Performance
-- ✅ Lazy loading de componentes
-- ✅ Code splitting otimizado
-- ✅ Memoização de componentes pesados
-- ✅ Bundle size otimizado
-
-#### 🧪 Qualidade
-- ✅ Sistema de testes configurado
-- ✅ Error boundaries implementados
-- ✅ Sistema de logging centralizado
-- ✅ TypeScript rigoroso
-
-#### 🎨 UX/UI
-- ✅ Loading states melhorados
-- ✅ Skeleton loading
-- ✅ Animações suaves
-- ✅ Responsividade completa
-
-## 🚀 Como Executar
-
-### Pré-requisitos
-- Node.js 18+
-- npm ou yarn
-
-### Instalação
+1. **Clone o repositório**
 ```bash
-# Clone o repositório
 git clone https://github.com/seu-usuario/metricawhats.git
 cd metricawhats
+```
 
-# Instale as dependências
+2. **Instale as dependências**
+```bash
 npm install
+```
 
-# Configure as variáveis de ambiente
+3. **Configure as variáveis de ambiente**
+```bash
 cp env.example .env.local
-# Edite .env.local com suas credenciais do Supabase
 ```
 
-### Desenvolvimento
+4. **Configure o Supabase**
+- Crie um projeto no [Supabase](https://supabase.com)
+- Execute as migrações em `database/supabase/migrations/`
+- Configure as políticas em `database/policies/`
+
+5. **Execute a aplicação**
 ```bash
-# Inicie o servidor de desenvolvimento
 npm run dev
-
-# Execute os testes
-npm run test
-
-# Execute os testes com UI
-npm run test:ui
-
-# Verifique a cobertura de testes
-npm run test:coverage
 ```
 
-### Build
+## 📊 Configuração do Banco
+
+### Migrações
 ```bash
-# Build para produção
-npm run build
-
-# Preview do build
-npm run preview
+# Execute as migrações
+supabase db push
 ```
 
-## 📊 Métricas de Performance
-
-- **Bundle Size**: ~500KB (gzipped)
-- **First Contentful Paint**: < 1.5s
-- **Largest Contentful Paint**: < 2.5s
-- **Cumulative Layout Shift**: < 0.1
-- **First Input Delay**: < 100ms
-
-## 🧪 Testes
-
-### Executar Testes
+### Políticas RLS
 ```bash
-# Todos os testes
-npm run test
-
-# Testes com UI
-npm run test:ui
-
-# Testes em modo watch
-npm run test:watch
-
-# Cobertura de testes
-npm run test:coverage
+# Aplique as políticas de segurança
+psql -h seu-host -U seu-usuario -d seu-banco -f database/policies/admin_policies.sql
 ```
 
-### Estrutura de Testes
-- **Unit Tests**: Componentes individuais
-- **Integration Tests**: Fluxos de usuário
-- **E2E Tests**: Cenários completos (planejado)
-
-## 🔧 Configuração
-
-### Variáveis de Ambiente
-```env
-# Supabase
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-
-# App
-VITE_APP_NAME=MetricaWhats
-VITE_APP_VERSION=1.0.0
-VITE_APP_ENVIRONMENT=development
-
-# Feature Flags
-VITE_ENABLE_PWA=true
-VITE_ENABLE_OFFLINE_MODE=true
-VITE_ENABLE_ANALYTICS=true
+### Funções Admin
+```bash
+# Instale as funções administrativas
+psql -h seu-host -U seu-usuario -d seu-banco -f database/functions/admin_functions.sql
 ```
 
-### TypeScript
-- Configuração rigorosa habilitada
-- Strict mode ativo
-- Validação de tipos em tempo de compilação
+## 🔧 Scripts Disponíveis
 
-### ESLint
-- Regras de qualidade de código
-- Integração com TypeScript
-- Auto-fix disponível
+```bash
+npm run dev          # Desenvolvimento
+npm run build        # Build de produção
+npm run preview      # Preview do build
+npm run test         # Executar testes
+npm run test:ui      # Interface de testes
+npm run lint         # Linting
+```
 
-## 📈 Roadmap
+## 📚 Documentação
 
-### ✅ Concluído
-- [x] Sistema de autenticação
-- [x] Dashboard com métricas
-- [x] Exportação de relatórios
-- [x] Filtros por data
-- [x] Comparação diária
-- [x] Error boundaries
-- [x] Sistema de logging
-- [x] Testes unitários
-- [x] Lazy loading
-- [x] Validação com Zod
-
-### 🚧 Em Desenvolvimento
-- [ ] PWA completo
-- [ ] Service worker
-- [ ] Testes E2E
-- [ ] CI/CD pipeline
-- [ ] Monitoramento de performance
-
-### 📋 Planejado
-- [ ] Dark mode
-- [ ] Internacionalização
-- [ ] Notificações push
-- [ ] Integração com outros canais
-- [ ] API pública
+- [Setup Inicial](docs/SETUP.md)
+- [Configuração WhatsApp](docs/WHATSAPP_CONNECTION.md)
+- [Funções Admin](docs/ADMIN_FUNCTIONS_SETUP.md)
+- [Melhorias de Exportação](docs/MELHORIAS_EXPORTACAO.md)
 
 ## 🤝 Contribuição
 
@@ -208,12 +127,20 @@ VITE_ENABLE_ANALYTICS=true
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
-## 📞 Suporte
+## 🆘 Suporte
 
-- **Email**: contato@metricawhats.com
-- **Documentação**: [docs.metricawhats.com](https://docs.metricawhats.com)
+- **Documentação**: [docs/](docs/)
 - **Issues**: [GitHub Issues](https://github.com/seu-usuario/metricawhats/issues)
+- **Email**: suporte@metricawhats.com
+
+## 🗺️ Roadmap
+
+- [ ] **PWA**: Aplicação Progressive Web App
+- [ ] **Notificações**: Push notifications
+- [ ] **Analytics Avançados**: Machine Learning
+- [ ] **Integrações**: CRM, ERP, etc.
+- [ ] **Mobile App**: React Native
 
 ---
 
-Desenvolvido com ❤️ pela equipe MetricaWhats
+**MetricaWhats** - Transformando atendimentos em resultados! 🚀
