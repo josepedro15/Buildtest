@@ -835,11 +835,13 @@ export default function Dashboard() {
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Taxa de Conversão</span>
                   <span className="text-sm font-semibold text-muted-foreground">
-                    {dashboardData?.taxa_conversao?.toFixed(1) || 0}% / 30%
+                    {dashboardData?.taxa_conversao?.toFixed(1) || 0}% / {dashboardData?.meta_taxa_conversao ? 'Meta definida' : '0%'}
                   </span>
                 </div>
-                <Progress value={((dashboardData?.taxa_conversao || 0) / 30) * 100} className="h-3" />
-                <div className="text-xs text-muted-foreground">Meta: 30% até março</div>
+                <Progress value={dashboardData?.taxa_conversao ? ((dashboardData.taxa_conversao / 30) * 100) : 0} className="h-3" />
+                <div className="text-xs text-muted-foreground">
+                  {dashboardData?.meta_taxa_conversao || 'Meta não definida'}
+                </div>
               </div>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
@@ -847,21 +849,25 @@ export default function Dashboard() {
                   <span className="text-sm font-semibold text-muted-foreground">
                     {dashboardData?.tempo_medio_resposta 
                       ? `${Math.floor(dashboardData.tempo_medio_resposta / 60)}m ${dashboardData.tempo_medio_resposta % 60}s`
-                      : '0s'} / 2m
+                      : '0s'} / {dashboardData?.meta_tempo_resposta ? 'Meta definida' : '0s'}
                   </span>
                 </div>
-                <Progress value={Math.max(0, 100 - ((dashboardData?.tempo_medio_resposta || 0) / 120) * 100)} className="h-3" />
-                <div className="text-xs text-muted-foreground">Meta: &lt; 2min até fevereiro</div>
+                <Progress value={dashboardData?.tempo_medio_resposta ? Math.max(0, 100 - ((dashboardData.tempo_medio_resposta / 120) * 100)) : 0} className="h-3" />
+                <div className="text-xs text-muted-foreground">
+                  {dashboardData?.meta_tempo_resposta || 'Meta não definida'}
+                </div>
               </div>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Nota de Qualidade</span>
                   <span className="text-sm font-semibold text-muted-foreground">
-                    {dashboardData?.nota_media_qualidade?.toFixed(1) || 0} / 4.5
+                    {dashboardData?.nota_media_qualidade?.toFixed(1) || 0} / {dashboardData?.meta_nota_qualidade ? 'Meta definida' : '0'}
                   </span>
                 </div>
-                <Progress value={((dashboardData?.nota_media_qualidade || 0) / 4.5) * 100} className="h-3" />
-                <div className="text-xs text-muted-foreground">Meta: 4.5/5 até abril</div>
+                <Progress value={dashboardData?.nota_media_qualidade ? ((dashboardData.nota_media_qualidade / 4.5) * 100) : 0} className="h-3" />
+                <div className="text-xs text-muted-foreground">
+                  {dashboardData?.meta_nota_qualidade || 'Meta não definida'}
+                </div>
               </div>
             </div>
           </CardContent>
