@@ -177,11 +177,11 @@ export default function Dashboard() {
   ];
 
   const intentionsData = [
-    { name: "Compra", percentage: dashboardData?.intencao_compra || 25.7, color: "#10b981", icon: "🛒" },
-    { name: "Dúvida Geral", percentage: dashboardData?.intencao_duvida_geral || 51.6, color: "#3b82f6", icon: "❓" },
-    { name: "Reclamação", percentage: dashboardData?.intencao_reclamacao || 3.3, color: "#ef4444", icon: "⚠️" },
-    { name: "Suporte", percentage: dashboardData?.intencao_suporte || 6.6, color: "#f59e0b", icon: "🛠️" },
-    { name: "Orçamento", percentage: dashboardData?.intencao_orcamento || 12.8, color: "#8b5cf6", icon: "💰" }
+    { name: "Compra", percentage: dashboardData?.intencao_compra || 0, color: "#10b981", icon: "🛒" },
+    { name: "Dúvida Geral", percentage: dashboardData?.intencao_duvida_geral || 0, color: "#3b82f6", icon: "❓" },
+    { name: "Reclamação", percentage: dashboardData?.intencao_reclamacao || 0, color: "#ef4444", icon: "⚠️" },
+    { name: "Suporte", percentage: dashboardData?.intencao_suporte || 0, color: "#f59e0b", icon: "🛠️" },
+    { name: "Orçamento", percentage: dashboardData?.intencao_orcamento || 0, color: "#8b5cf6", icon: "💰" }
   ];
 
   // Processar próximas ações do dashboard
