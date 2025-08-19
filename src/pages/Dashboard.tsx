@@ -13,8 +13,7 @@ import { useDashboardData } from '@/hooks/useDashboardData';
 import { ExportModal } from '@/components/ExportModal';
 import { FilterModal } from '@/components/FilterModal';
 import { useWhatsAppInstances } from '@/hooks/useWhatsAppInstances';
-import { ChartsDashboard } from '@/components/charts/ChartsDashboard';
-import { PieChart } from '@/components/charts/PieChart';
+
 import { 
   MessageSquare, 
   TrendingUp, 
@@ -584,18 +583,41 @@ export default function Dashboard() {
 
         {/* Seção de Insights - Layout melhorado */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Intenções dos Clientes - Gráfico Interativo */}
-          <PieChart
-            title="Intenções dos Clientes"
-            data={intentionsData.map(intention => ({
-              name: intention.name,
-              value: intention.percentage,
-              color: intention.color,
-              icon: intention.icon
-            }))}
-            description="Distribuição das intenções identificadas nos atendimentos"
-            height={400}
-          />
+          {/* Intenções dos Clientes */}
+          <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-primary" />
+                Intenções dos Clientes
+              </CardTitle>
+              <CardDescription>
+                Distribuição das intenções identificadas nos atendimentos
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {intentionsData.map((intention, index) => (
+                <div key={index} className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">{intention.icon}</span>
+                      <span className="text-sm font-medium">{intention.name}</span>
+                    </div>
+                    <span className="text-sm font-semibold text-muted-foreground">{intention.percentage}%</span>
+                  </div>
+                  <div className="relative">
+                    <Progress 
+                      value={intention.percentage} 
+                      className="h-3 bg-muted/50" 
+                    />
+                    <div 
+                      className={`absolute inset-0 h-3 rounded-full ${intention.color} opacity-20`}
+                      style={{ width: `${intention.percentage}%` }}
+                    ></div>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
 
           {/* Insights de Performance */}
           <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
@@ -844,11 +866,6 @@ export default function Dashboard() {
             </div>
           </CardContent>
         </Card>
-
-        {/* Gráficos Interativos */}
-        <section className="space-y-6 mb-8">
-          <ChartsDashboard dashboardData={dashboardData} />
-        </section>
 
         {/* Footer melhorado */}
         <div className="text-center py-8 border-t border-border/50">
