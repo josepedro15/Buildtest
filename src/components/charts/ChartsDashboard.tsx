@@ -185,39 +185,14 @@ export function ChartsDashboard({ dashboardData, className }: ChartsDashboardPro
 
         {/* Tab: Distribuição */}
         <TabsContent value="distribution" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <PieChartComponent
-              title="Intenções dos Clientes"
-              data={intentionsData}
-              description="Distribuição das intenções identificadas nos atendimentos"
-              height={400}
-            />
-            <div className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Resumo das Intenções</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {intentionsData.map((intention, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <span className="text-2xl">{intention.icon}</span>
-                          <div>
-                            <p className="font-medium">{intention.name}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {intention.value.toFixed(1)}% dos atendimentos
-                            </p>
-                          </div>
-                        </div>
-                        <Badge variant="secondary">
-                          {intention.value.toFixed(1)}%
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+          <div className="flex justify-center">
+            <div className="w-full max-w-2xl">
+              <PieChartComponent
+                title="Intenções dos Clientes"
+                data={intentionsData}
+                description="Distribuição das intenções identificadas nos atendimentos"
+                height={500}
+              />
             </div>
           </div>
         </TabsContent>
