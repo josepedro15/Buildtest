@@ -5,6 +5,11 @@
 DROP POLICY IF EXISTS "Users can view their own instances" ON public.whatsapp_instances;
 DROP POLICY IF EXISTS "Users can view their own instances or admins can view all" ON public.whatsapp_instances;
 
+-- List all existing policies to see what we have
+SELECT schemaname, tablename, policyname, permissive, roles, cmd, qual 
+FROM pg_policies 
+WHERE tablename = 'whatsapp_instances';
+
 -- Create new policy with direct admin check
 CREATE POLICY "Users can view their own instances or admins can view all" ON public.whatsapp_instances
   FOR SELECT USING (
