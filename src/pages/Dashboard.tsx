@@ -59,7 +59,6 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [showCharts, setShowCharts] = useState(false);
   
   // WhatsApp instances data
   const { instances, isLoadingInstances } = useWhatsAppInstances();
@@ -503,15 +502,6 @@ export default function Dashboard() {
             </div>
             <div className="flex gap-3">
               <Button 
-                variant="outline"
-                size="lg" 
-                onClick={() => setShowCharts(!showCharts)}
-                className="gap-2 border-primary/20 hover:border-primary/40"
-              >
-                <BarChart3 className="h-4 w-4" />
-                {showCharts ? 'Ocultar Gráficos' : 'Gráficos Interativos'}
-              </Button>
-              <Button 
                 onClick={() => navigate('/whatsapp-connect')}
                 size="lg" 
                 className="gap-2 bg-green-600 hover:bg-green-700"
@@ -878,11 +868,9 @@ export default function Dashboard() {
         </Card>
 
         {/* Gráficos Interativos */}
-        {showCharts && (
-          <section className="space-y-6">
-            <ChartsDashboard dashboardData={dashboardData} />
-          </section>
-        )}
+        <section className="space-y-6 mb-8">
+          <ChartsDashboard dashboardData={dashboardData} />
+        </section>
 
         {/* Footer melhorado */}
         <div className="text-center py-8 border-t border-border/50">
