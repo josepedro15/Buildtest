@@ -136,10 +136,39 @@ export default function Admin() {
       ];
 
       // Buscar instâncias do WhatsApp para cada usuário
-      const { data: instancesData, error: instancesError } = await supabase
-        .from('whatsapp_instances')
-        .select('*')
-        .eq('is_active', true);
+      // Como admin, podemos buscar todas as instâncias ativas
+      let instancesData = [];
+      let instancesError = null;
+      
+      try {
+        // Primeiro, tentar buscar todas as instâncias (se as políticas permitirem)
+        const { data: allInstances, error: allError } = await supabase
+          .from('whatsapp_instances')
+          .select('*')
+          .eq('is_active', true);
+        
+        if (allError) {
+          console.warn('Erro ao buscar todas as instâncias:', allError);
+          // Se falhar, buscar apenas as instâncias do usuário atual
+          const { data: userInstances, error: userError } = await supabase
+            .from('whatsapp_instances')
+            .select('*')
+            .eq('user_id', user.id)
+            .eq('is_active', true);
+          
+          if (userError) {
+            console.error('Erro ao buscar instâncias do usuário:', userError);
+            instancesError = userError;
+          } else {
+            instancesData = userInstances || [];
+          }
+        } else {
+          instancesData = allInstances || [];
+        }
+      } catch (error) {
+        console.error('Erro inesperado ao buscar instâncias:', error);
+        instancesError = error;
+      }
 
       if (instancesError) {
         console.error('Erro ao carregar instâncias:', instancesError);
