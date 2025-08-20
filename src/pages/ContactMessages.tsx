@@ -467,7 +467,7 @@ export default function ContactMessages() {
                               <Eye className="h-4 w-4" />
                             </Button>
                           </DialogTrigger>
-                          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                                                     <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
                             <DialogHeader>
                               <DialogTitle>Detalhes da Mensagem</DialogTitle>
                               <DialogDescription>
@@ -475,8 +475,8 @@ export default function ContactMessages() {
                               </DialogDescription>
                             </DialogHeader>
                             
-                            {selectedMessage && (
-                              <div className="space-y-6">
+                                                         {selectedMessage && (
+                               <div className="space-y-4 sm:space-y-6">
                                 {/* Informações do Remetente */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                   <div>
@@ -548,21 +548,22 @@ export default function ContactMessages() {
                                 {/* Notas Administrativas */}
                                 <div>
                                   <label className="text-sm font-medium">Notas Administrativas</label>
-                                  <Textarea
-                                    value={adminNotes}
-                                    onChange={(e) => setAdminNotes(e.target.value)}
-                                    placeholder="Adicione notas sobre esta mensagem..."
-                                    className="mt-2"
-                                    rows={3}
-                                  />
+                                                                     <Textarea
+                                     value={adminNotes}
+                                     onChange={(e) => setAdminNotes(e.target.value)}
+                                     placeholder="Adicione notas sobre esta mensagem..."
+                                     className="mt-2 min-h-[80px]"
+                                     rows={3}
+                                   />
                                 </div>
 
-                                {/* Ações */}
-                                <div className="flex gap-2 pt-4 border-t">
+                                                                 {/* Ações */}
+                                 <div className="flex flex-col sm:flex-row gap-2 pt-4 border-t space-y-2 sm:space-y-0">
                                   <Button
                                     variant="outline"
                                     onClick={() => handleUpdateStatus(selectedMessage.id, 'read')}
                                     disabled={isUpdatingStatus}
+                                    className="flex-1 sm:flex-none"
                                   >
                                     <Eye className="h-4 w-4 mr-2" />
                                     Marcar como Lida
@@ -571,6 +572,7 @@ export default function ContactMessages() {
                                     variant="outline"
                                     onClick={() => handleUpdateStatus(selectedMessage.id, 'replied')}
                                     disabled={isUpdatingStatus}
+                                    className="flex-1 sm:flex-none"
                                   >
                                     <Reply className="h-4 w-4 mr-2" />
                                     Marcar como Respondida
@@ -579,6 +581,7 @@ export default function ContactMessages() {
                                     variant="outline"
                                     onClick={() => handleUpdateStatus(selectedMessage.id, 'archived')}
                                     disabled={isUpdatingStatus}
+                                    className="flex-1 sm:flex-none"
                                   >
                                     <Archive className="h-4 w-4 mr-2" />
                                     Arquivar
@@ -587,6 +590,7 @@ export default function ContactMessages() {
                                     variant="destructive"
                                     onClick={() => handleDeleteMessage(selectedMessage.id)}
                                     disabled={isDeletingMessage}
+                                    className="flex-1 sm:flex-none"
                                   >
                                     <Trash2 className="h-4 w-4 mr-2" />
                                     Excluir
