@@ -41,6 +41,8 @@ const ContactForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('Iniciando envio do formulário:', formData);
+    
     // Validar campos obrigatórios
     if (!formData.name.trim() || !formData.email.trim()) {
       toast({
@@ -62,9 +64,12 @@ const ContactForm = () => {
       return;
     }
 
+    console.log('Dados validados, enviando mensagem...');
+
     // Enviar mensagem
     createMessage(formData, {
       onSuccess: () => {
+        console.log('Mensagem enviada com sucesso!');
         // Limpar formulário após sucesso
         setFormData({
           name: "",
@@ -73,6 +78,9 @@ const ContactForm = () => {
           phone: "",
           message: ""
         });
+      },
+      onError: (error) => {
+        console.error('Erro ao enviar mensagem:', error);
       }
     });
   };

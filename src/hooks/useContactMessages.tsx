@@ -45,6 +45,14 @@ export function useContactMessages() {
 
   const isAdmin = adminUserIds.includes(user?.id || '');
 
+  // Log da configuração do Supabase
+  console.log('Configuração do Supabase:', {
+    url: supabase.supabaseUrl,
+    hasAnonKey: !!supabase.supabaseKey,
+    user: user?.id,
+    isAdmin
+  });
+
   // Buscar mensagens de contato (apenas para admins)
   const {
     data: messages,
@@ -76,31 +84,62 @@ export function useContactMessages() {
   // Criar nova mensagem de contato (público)
   const createMessageMutation = useMutation({
     mutationFn: async (messageData: CreateContactMessageData): Promise<ContactMessage> => {
-      // Capturar informações do navegador
-      const userAgent = navigator.userAgent;
-      const ipAddress = await fetch('https://api.ipify.org?format=json')
-        .then(res => res.json())
-        .then(data => data.ip)
-        .catch(() => null);
+      try {
+        // Capturar informações do navegador
+        const userAgent = navigator.userAgent;
+        let ipAddress = null;
+        
+        try {
+          const ipResponse = await fetch('https://api.ipify.org?format=json');
+          if (ipResponse.ok) {
+            const ipData = await ipResponse.json();
+            ipAddress = ipData.ip;
+          }
+        } catch (ipError) {
+          console.warn('Erro ao obter IP:', ipError);
+        }
 
-      const { data, error } = await supabase
-        .from('contact_messages')
-        .insert({
+        console.log('Tentando inserir mensagem:', {
           ...messageData,
           source: 'contact_form',
           ip_address: ipAddress,
           user_agent: userAgent,
           status: 'pending',
           priority: 'normal'
-        })
-        .select()
-        .single();
+        });
 
-      if (error) {
-        throw error;
+        const { data, error } = await supabase
+          .from('contact_messages')
+          .insert({
+            ...messageData,
+            source: 'contact_form',
+            ip_address: ipAddress,
+            user_agent: userAgent,
+            status: 'pending',
+            priority: 'normal'
+          })
+          .select()
+          .single();
+
+        if (error) {
+          console.error('Erro do Supabase:', error);
+          throw new Error(`Erro do banco de dados: ${error.message} (${error.code})`);
+        }
+
+        if (!data) {
+          throw new Error('Nenhum dado retornado após inserção');
+        }
+
+        console.log('Mensagem inserida com sucesso:', data);
+        return data;
+      } catch (error) {
+        console.error('Erro completo na criação da mensagem:', error);
+        if (error instanceof Error) {
+          throw error;
+        } else {
+          throw new Error(`Erro inesperado: ${String(error)}`);
+        }
       }
-
-      return data;
     },
     onSuccess: () => {
       // Atualizar cache se for admin
@@ -114,9 +153,10 @@ export function useContactMessages() {
       });
     },
     onError: (error) => {
+      console.error('Erro no onError do mutation:', error);
       toast({
         title: "Erro ao enviar mensagem",
-        description: error instanceof Error ? error.message : "Erro desconhecido",
+        description: error instanceof Error ? error.message : `Erro desconhecido: ${String(error)}`,
         variant: "destructive"
       });
     }
