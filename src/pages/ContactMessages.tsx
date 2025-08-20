@@ -36,6 +36,20 @@ import {
   TrendingDown
 } from 'lucide-react';
 
+// Estilos CSS personalizados para o modal
+const modalStyles = `
+  @media (max-width: 640px) {
+    .responsive-modal {
+      width: 100vw !important;
+      max-width: 100vw !important;
+      height: 100vh !important;
+      max-height: 100vh !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+    }
+  }
+`;
+
 export default function ContactMessages() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -189,7 +203,9 @@ export default function ContactMessages() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+    <>
+      <style>{modalStyles}</style>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
       {/* Header */}
       <header className="border-b border-border/50 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
@@ -467,7 +483,7 @@ export default function ContactMessages() {
                               <Eye className="h-4 w-4" />
                             </Button>
                           </DialogTrigger>
-                                                     <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+                                                     <DialogContent className="responsive-modal w-[98vw] max-w-3xl max-h-[95vh] overflow-y-auto p-4 sm:p-6 my-4" style={{ marginTop: '2vh', marginBottom: '2vh' }}>
                             <DialogHeader>
                               <DialogTitle>Detalhes da Mensagem</DialogTitle>
                               <DialogDescription>
@@ -476,7 +492,7 @@ export default function ContactMessages() {
                             </DialogHeader>
                             
                                                          {selectedMessage && (
-                               <div className="space-y-4 sm:space-y-6">
+                               <div className="space-y-3 sm:space-y-4">
                                 {/* Informações do Remetente */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                   <div>
@@ -552,13 +568,13 @@ export default function ContactMessages() {
                                      value={adminNotes}
                                      onChange={(e) => setAdminNotes(e.target.value)}
                                      placeholder="Adicione notas sobre esta mensagem..."
-                                     className="mt-2 min-h-[80px]"
-                                     rows={3}
+                                     className="mt-2 min-h-[60px]"
+                                     rows={2}
                                    />
                                 </div>
 
                                                                  {/* Ações */}
-                                 <div className="flex flex-col sm:flex-row gap-2 pt-4 border-t space-y-2 sm:space-y-0">
+                                 <div className="flex flex-col sm:flex-row gap-2 pt-3 border-t space-y-2 sm:space-y-0">
                                   <Button
                                     variant="outline"
                                     onClick={() => handleUpdateStatus(selectedMessage.id, 'read')}
@@ -608,7 +624,8 @@ export default function ContactMessages() {
             )}
           </CardContent>
         </Card>
+              </div>
       </div>
-    </div>
+    </>
   );
 }
