@@ -392,6 +392,74 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_messages: {
+        Row: {
+          id: string
+          name: string
+          email: string
+          company: string | null
+          phone: string | null
+          message: string | null
+          status: string
+          priority: string
+          source: string | null
+          ip_address: string | null
+          user_agent: string | null
+          created_at: string
+          updated_at: string
+          read_at: string | null
+          replied_at: string | null
+          admin_notes: string | null
+          assigned_to: string | null
+        }
+        Insert: {
+          id?: string
+          name: string
+          email: string
+          company?: string | null
+          phone?: string | null
+          message?: string | null
+          status?: string
+          priority?: string
+          source?: string | null
+          ip_address?: string | null
+          user_agent?: string | null
+          created_at?: string
+          updated_at?: string
+          read_at?: string | null
+          replied_at?: string | null
+          admin_notes?: string | null
+          assigned_to?: string | null
+        }
+        Update: {
+          id?: string
+          name?: string
+          email?: string
+          company?: string | null
+          phone?: string | null
+          message?: string | null
+          status?: string
+          priority?: string
+          source?: string | null
+          ip_address?: string | null
+          user_agent?: string | null
+          created_at?: string
+          updated_at?: string
+          read_at?: string | null
+          replied_at?: string | null
+          admin_notes?: string | null
+          assigned_to?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_messages_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never

@@ -337,10 +337,10 @@ export default function Admin() {
 
       <div className="container mx-auto px-4 py-8 space-y-8">
                             {/* Estatísticas */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                       {loading ? (
                         // Skeletons durante carregamento
-                        Array.from({ length: 4 }).map((_, index) => (
+                        Array.from({ length: 5 }).map((_, index) => (
                           <Card key={index} className="border-border/50 bg-card/50 backdrop-blur-sm">
                             <CardContent className="p-6">
                               <div className="flex items-center gap-3">
@@ -418,6 +418,26 @@ export default function Admin() {
                                     }).length}
                                   </p>
                                 </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+
+                          {/* Card para Mensagens de Contato */}
+                          <Card className="border-border/50 bg-card/50 backdrop-blur-sm cursor-pointer hover:bg-card/70 transition-colors" onClick={() => navigate('/admin/contact-messages')}>
+                            <CardContent className="p-6">
+                              <div className="flex items-center gap-3">
+                                <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
+                                  <MessageSquare className="h-5 w-5 text-blue-600" />
+                                </div>
+                                <div>
+                                  <p className="text-sm text-muted-foreground">Mensagens de Contato</p>
+                                  <p className="text-2xl font-bold">Ver Mensagens</p>
+                                </div>
+                              </div>
+                              <div className="mt-3">
+                                <Button variant="outline" size="sm" className="w-full">
+                                  Gerenciar Mensagens
+                                </Button>
                               </div>
                             </CardContent>
                           </Card>

@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { useContactMessages, CreateContactMessageData } from "@/hooks/useContactMessages";
 import { WHATSAPP_CONTACT } from "@/lib/utils";
 import { 
   Mail, 
@@ -19,15 +20,15 @@ import {
 } from "lucide-react";
 
 const ContactForm = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<CreateContactMessageData>({
     name: "",
     email: "",
     company: "",
     phone: "",
     message: ""
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { createMessage, isCreatingMessage } = useContactMessages();
 
   const handleWhatsAppContact = () => {
     window.open(WHATSAPP_CONTACT.link, '_blank');
@@ -39,23 +40,41 @@ const ContactForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-
-    // Simulate form submission
-    setTimeout(() => {
+    
+    // Validar campos obrigatórios
+    if (!formData.name.trim() || !formData.email.trim()) {
       toast({
-        title: "Mensagem enviada com sucesso!",
-        description: "Nossa equipe entrará em contato em até 24 horas.",
+        title: "Campos obrigatórios",
+        description: "Nome e email são obrigatórios.",
+        variant: "destructive"
       });
-      setFormData({
-        name: "",
-        email: "",
-        company: "",
-        phone: "",
-        message: ""
+      return;
+    }
+
+    // Validar email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast({
+        title: "Email inválido",
+        description: "Por favor, insira um email válido.",
+        variant: "destructive"
       });
-      setIsSubmitting(false);
-    }, 1000);
+      return;
+    }
+
+    // Enviar mensagem
+    createMessage(formData, {
+      onSuccess: () => {
+        // Limpar formulário após sucesso
+        setFormData({
+          name: "",
+          email: "",
+          company: "",
+          phone: "",
+          message: ""
+        });
+      }
+    });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -150,15 +169,43 @@ const ContactForm = () => {
                   />
                 </div>
 
+                <div>
+                  <Label htmlFor="phone">Telefone</Label>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="mt-2"
+                    placeholder="(11) 99999-9999"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="message">Mensagem</Label>
+                  <Textarea
+                    id="message"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    className="mt-2"
+                    placeholder="Conte-nos sobre sua empresa e como podemos ajudar..."
+                    rows={4}
+                  />
+                </div>
+
                 <Button
                   type="submit"
                   className="w-full"
                   size="lg"
-                  disabled={isSubmitting}
+                  disabled={isCreatingMessage}
                   variant="outline"
                 >
-                  {isSubmitting ? (
-                    "Enviando..."
+                  {isCreatingMessage ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2"></div>
+                      Enviando...
+                    </>
                   ) : (
                     <>
                       <Send className="h-4 w-4 mr-2" />
