@@ -33,7 +33,8 @@ import {
   Plus,
   Minus,
   TrendingUp,
-  TrendingDown
+  TrendingDown,
+  MessageCircle
 } from 'lucide-react';
 
 // Estilos CSS personalizados para o modal
@@ -49,6 +50,23 @@ const modalStyles = `
     }
   }
 `;
+
+// Função para gerar link do WhatsApp
+function getWhatsAppLink(phone: string, message?: string): string {
+  // Remove todos os caracteres não numéricos
+  const cleanPhone = phone.replace(/\D/g, '');
+  
+  // Adiciona +55 se não tiver código do país
+  const fullPhone = cleanPhone.startsWith('55') ? cleanPhone : `55${cleanPhone}`;
+  
+  // Remove o primeiro 0 se existir após o código do país
+  const formattedPhone = fullPhone.startsWith('550') ? fullPhone.replace('550', '55') : fullPhone;
+  
+  // Codifica a mensagem
+  const encodedMessage = message ? encodeURIComponent(message) : '';
+  
+  return `https://wa.me/${formattedPhone}${encodedMessage ? `?text=${encodedMessage}` : ''}`;
+}
 
 export default function ContactMessages() {
   const { user } = useAuth();
@@ -126,6 +144,12 @@ export default function ContactMessages() {
     if (confirm('Tem certeza que deseja excluir esta mensagem?')) {
       await deleteMessage(messageId);
     }
+  };
+
+  const handleWhatsAppClick = (phone: string, name: string) => {
+    const message = `Olá ${name}! Vi sua mensagem no formulário de contato do MetricaWhats. Como posso ajudar?`;
+    const whatsappLink = getWhatsAppLink(phone, message);
+    window.open(whatsappLink, '_blank');
   };
 
   const getStatusIcon = (status: string) => {
@@ -444,12 +468,23 @@ export default function ContactMessages() {
                                   <span>{message.company}</span>
                                 </div>
                               )}
-                              {message.phone && (
-                                <div className="flex items-center gap-1">
-                                  <Phone className="h-3 w-3" />
-                                  <span>{message.phone}</span>
-                                </div>
-                              )}
+                                                             {message.phone && (
+                                 <div className="flex items-center gap-1">
+                                   <Phone className="h-3 w-3" />
+                                   <span>{message.phone}</span>
+                                   <Button
+                                     variant="ghost"
+                                     size="sm"
+                                     onClick={(e) => {
+                                       e.stopPropagation();
+                                       handleWhatsAppClick(message.phone!, message.name);
+                                     }}
+                                     className="h-6 w-6 p-0 bg-green-50 hover:bg-green-100 text-green-600"
+                                   >
+                                     <MessageCircle className="h-3 w-3" />
+                                   </Button>
+                                 </div>
+                               )}
                             </div>
                           </div>
                         </div>
@@ -509,12 +544,23 @@ export default function ContactMessages() {
                                       <p className="text-sm text-muted-foreground">{selectedMessage.company}</p>
                                     </div>
                                   )}
-                                  {selectedMessage.phone && (
-                                    <div>
-                                      <label className="text-sm font-medium">Telefone</label>
-                                      <p className="text-sm text-muted-foreground">{selectedMessage.phone}</p>
-                                    </div>
-                                  )}
+                                                                     {selectedMessage.phone && (
+                                     <div>
+                                       <label className="text-sm font-medium">Telefone</label>
+                                       <div className="flex items-center gap-2 mt-1">
+                                         <p className="text-sm text-muted-foreground">{selectedMessage.phone}</p>
+                                         <Button
+                                           variant="outline"
+                                           size="sm"
+                                           onClick={() => handleWhatsAppClick(selectedMessage.phone!, selectedMessage.name)}
+                                           className="bg-green-50 hover:bg-green-100 text-green-700 border-green-200 hover:border-green-300"
+                                         >
+                                           <MessageCircle className="h-4 w-4 mr-1" />
+                                           WhatsApp
+                                         </Button>
+                                       </div>
+                                     </div>
+                                   )}
                                 </div>
 
                                 {/* Mensagem */}
