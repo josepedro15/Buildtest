@@ -291,10 +291,10 @@ export default function CookiePolicy() {
                     Você pode controlar cookies através das configurações do seu navegador:
                   </p>
                   <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li>• <strong>Chrome:</strong> Configurações > Privacidade e Segurança > Cookies</li>
-                    <li>• <strong>Firefox:</strong> Opções > Privacidade e Segurança > Cookies</li>
-                    <li>• <strong>Safari:</strong> Preferências > Privacidade > Cookies</li>
-                    <li>• <strong>Edge:</strong> Configurações > Cookies e Permissões</li>
+                    <li>• <strong>Chrome:</strong> Configurações &gt; Privacidade e Segurança &gt; Cookies</li>
+                    <li>• <strong>Firefox:</strong> Opções &gt; Privacidade e Segurança &gt; Cookies</li>
+                    <li>• <strong>Safari:</strong> Preferências &gt; Privacidade &gt; Cookies</li>
+                    <li>• <strong>Edge:</strong> Configurações &gt; Cookies e Permissões</li>
                   </ul>
                 </div>
                 
