@@ -485,7 +485,7 @@ export default function TermsOfService() {
                     Telefone
                   </h4>
                   <p className="text-sm text-muted-foreground">
-                    <strong>Brasil:</strong> +55 (11) 99999-9999<br />
+                    <strong>Brasil:</strong> +55 31 99495-9512<br />
                     <strong>Horário:</strong> Seg-Sex, 9h-18h (GMT-3)
                   </p>
                 </div>

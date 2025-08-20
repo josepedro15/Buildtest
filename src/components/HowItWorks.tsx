@@ -1,7 +1,13 @@
 import { Card } from "@/components/ui/card";
-import { ArrowRight, Download, BarChart3, Settings, Zap, CheckCircle, TrendingUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, Download, BarChart3, Settings, Zap, CheckCircle, TrendingUp, MessageCircle } from "lucide-react";
+import { WHATSAPP_CONTACT } from "@/lib/utils";
 
 const HowItWorks = () => {
+  const handleWhatsAppContact = () => {
+    window.open(WHATSAPP_CONTACT.link, '_blank');
+  };
+
   const steps = [
     {
       icon: Download,
@@ -124,9 +130,13 @@ const HowItWorks = () => {
           <p className="text-muted-foreground mb-6">
             Pronto para transformar seus atendimentos em resultados?
           </p>
-          <button className="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors">
+          <Button 
+            onClick={handleWhatsAppContact}
+            className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-semibold"
+          >
+            <MessageCircle className="h-4 w-4 mr-2" />
             Fale Conosco
-          </button>
+          </Button>
         </div>
       </div>
     </section>

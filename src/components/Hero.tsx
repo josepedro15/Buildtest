@@ -1,8 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { BarChart3, TrendingUp, Users, Zap } from "lucide-react";
+import { BarChart3, TrendingUp, Users, Zap, MessageCircle } from "lucide-react";
+import { WHATSAPP_CONTACT } from "@/lib/utils";
 
 const Hero = () => {
+  const handleWhatsAppContact = () => {
+    window.open(WHATSAPP_CONTACT.link, '_blank');
+  };
+
   return (
     <section className="py-20 lg:py-32 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/10"></div>
@@ -43,8 +48,13 @@ const Hero = () => {
           </div>
 
           <div className="flex justify-center">
-            <Button asChild size="lg" className="text-lg px-8 py-6">
-              <a href="#contact">Fale Conosco</a>
+            <Button 
+              onClick={handleWhatsAppContact}
+              size="lg" 
+              className="text-lg px-8 py-6 bg-green-600 hover:bg-green-700"
+            >
+              <MessageCircle className="h-5 w-5 mr-2" />
+              Fale Conosco
             </Button>
           </div>
         </div>

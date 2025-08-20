@@ -313,7 +313,7 @@ export function useExportData() {
     csvData.push([createSeparator('=', 100)]);
     csvData.push(['📄 RELATÓRIO GERADO AUTOMATICAMENTE PELO SISTEMA METRICAWHATS']);
     csvData.push(['🚀 Transformando atendimentos do WhatsApp em resultados mensuráveis']);
-    csvData.push(['📧 Suporte: contato@metricawhats.com | 📱 WhatsApp: (11) 99999-9999']);
+    csvData.push(['📧 Suporte: contato@metricawhats.com | 📱 WhatsApp: +55 31 99495-9512']);
     csvData.push([createSeparator('=', 100)]);
 
     // Converter para CSV com formatação melhorada
@@ -572,7 +572,7 @@ export function useExportData() {
     // ===== FOOTER PROFISSIONAL =====
     excelData.push(['RELATÓRIO GERADO AUTOMATICAMENTE PELO SISTEMA METRICAWHATS']);
     excelData.push(['Transformando atendimentos do WhatsApp em resultados mensuráveis']);
-    excelData.push(['Suporte: contato@metricawhats.com | WhatsApp: (11) 99999-9999']);
+    excelData.push(['Suporte: contato@metricawhats.com | WhatsApp: +55 31 99495-9512']);
 
     // Converter para CSV (Excel-friendly)
     const csvContent = excelData.map(row => 

@@ -1,9 +1,14 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, Menu, X } from "lucide-react";
+import { WHATSAPP_CONTACT } from "@/lib/utils";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const handleWhatsAppContact = () => {
+    window.open(WHATSAPP_CONTACT.link, '_blank');
+  };
 
   return (
     <header className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 border-b border-border">
@@ -33,8 +38,11 @@ const Header = () => {
           <Button asChild variant="outline">
             <a href="/auth">Entrar</a>
           </Button>
-          <Button asChild>
-            <a href="#contact">Falar com um Especialista</a>
+          <Button 
+            onClick={handleWhatsAppContact}
+            className="bg-green-600 hover:bg-green-700"
+          >
+            Falar com um Especialista
           </Button>
         </div>
 
@@ -67,8 +75,11 @@ const Header = () => {
               <Button asChild variant="outline" className="w-full">
                 <a href="/auth">Entrar</a>
               </Button>
-              <Button asChild className="w-full">
-                <a href="#contact">Falar com um Especialista</a>
+              <Button 
+                onClick={handleWhatsAppContact}
+                className="w-full bg-green-600 hover:bg-green-700"
+              >
+                Falar com um Especialista
               </Button>
             </div>
           </nav>

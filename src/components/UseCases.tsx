@@ -1,5 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { WHATSAPP_CONTACT } from "@/lib/utils";
 import { 
   ShoppingCart, 
   HeadphonesIcon, 
@@ -8,10 +10,15 @@ import {
   GraduationCap,
   Home,
   CheckCircle,
-  TrendingUp
+  TrendingUp,
+  MessageCircle
 } from "lucide-react";
 
 const UseCases = () => {
+  const handleWhatsAppContact = () => {
+    window.open(WHATSAPP_CONTACT.link, '_blank');
+  };
+
   const cases = [
     {
       icon: ShoppingCart,
@@ -158,9 +165,13 @@ const UseCases = () => {
               O WhatsApp Analytics funciona para qualquer negócio que use WhatsApp. 
               Fale conosco e descubra como adaptar para sua realidade.
             </p>
-            <button className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors">
+            <Button 
+              onClick={handleWhatsAppContact}
+              className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold"
+            >
+              <MessageCircle className="h-4 w-4 mr-2" />
               Falar com Especialista
-            </button>
+            </Button>
           </div>
         </div>
       </div>

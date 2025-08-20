@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { WHATSAPP_CONTACT } from "@/lib/utils";
 import { 
   Mail, 
   Phone, 
@@ -13,7 +14,8 @@ import {
   Send,
   CheckCircle,
   Shield,
-  Star
+  Star,
+  MessageCircle
 } from "lucide-react";
 
 const ContactForm = () => {
@@ -26,6 +28,14 @@ const ContactForm = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+
+  const handleWhatsAppContact = () => {
+    window.open(WHATSAPP_CONTACT.link, '_blank');
+    toast({
+      title: "Redirecionando para WhatsApp",
+      description: "Você será direcionado para conversar com nosso especialista.",
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,7 +79,7 @@ const ContactForm = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
-          {/* Contact Form */}
+          {/* Contact Form - Agora com foco no WhatsApp */}
           <Card className="p-8">
             {/* Trust Indicators */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
@@ -82,62 +92,82 @@ const ContactForm = () => {
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="name">Nome completo *</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  className="mt-2"
-                  placeholder="Seu nome"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="email">E-mail *</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className="mt-2"
-                  placeholder="seu@email.com"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="company">Empresa</Label>
-                <Input
-                  id="company"
-                  name="company"
-                  value={formData.company}
-                  onChange={handleChange}
-                  className="mt-2"
-                  placeholder="Nome da empresa"
-                />
-              </div>
-
+            {/* WhatsApp Contact Button - Principal */}
+            <div className="mb-6">
               <Button
-                type="submit"
-                className="w-full"
+                onClick={handleWhatsAppContact}
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 text-lg"
                 size="lg"
-                disabled={isSubmitting}
               >
-                {isSubmitting ? (
-                  "Enviando..."
-                ) : (
-                  <>
-                    <Send className="h-4 w-4 mr-2" />
-                    Falar com Especialista
-                  </>
-                )}
+                <MessageCircle className="h-5 w-5 mr-2" />
+                Falar com Especialista no WhatsApp
               </Button>
-            </form>
+              <p className="text-sm text-muted-foreground text-center mt-2">
+                Resposta imediata via WhatsApp
+              </p>
+            </div>
+
+            {/* Alternative Contact Form */}
+            <div className="border-t pt-6">
+              <h3 className="text-lg font-semibold mb-4">Ou envie uma mensagem</h3>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <Label htmlFor="name">Nome completo *</Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    className="mt-2"
+                    placeholder="Seu nome"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="email">E-mail *</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    className="mt-2"
+                    placeholder="seu@email.com"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="company">Empresa</Label>
+                  <Input
+                    id="company"
+                    name="company"
+                    value={formData.company}
+                    onChange={handleChange}
+                    className="mt-2"
+                    placeholder="Nome da empresa"
+                  />
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full"
+                  size="lg"
+                  disabled={isSubmitting}
+                  variant="outline"
+                >
+                  {isSubmitting ? (
+                    "Enviando..."
+                  ) : (
+                    <>
+                      <Send className="h-4 w-4 mr-2" />
+                      Enviar Mensagem
+                    </>
+                  )}
+                </Button>
+              </form>
+            </div>
           </Card>
 
           {/* Contact Info */}
@@ -154,22 +184,23 @@ const ContactForm = () => {
 
             <div className="space-y-6">
               <div className="flex items-start gap-4">
-                <div className="bg-primary/10 p-3 rounded-lg">
-                  <Mail className="h-5 w-5 text-primary" />
+                <div className="bg-green-100 p-3 rounded-lg">
+                  <MessageCircle className="h-5 w-5 text-green-600" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-foreground">E-mail</h4>
-                  <p className="text-muted-foreground">contato@whatsappanalytics.com</p>
+                  <h4 className="font-semibold text-foreground">WhatsApp</h4>
+                  <p className="text-muted-foreground">{WHATSAPP_CONTACT.phone}</p>
+                  <p className="text-sm text-green-600 font-medium">Resposta imediata</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-4">
                 <div className="bg-primary/10 p-3 rounded-lg">
-                  <Phone className="h-5 w-5 text-primary" />
+                  <Mail className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-foreground">WhatsApp</h4>
-                  <p className="text-muted-foreground">(11) 99999-9999</p>
+                  <h4 className="font-semibold text-foreground">E-mail</h4>
+                  <p className="text-muted-foreground">contato@metricawhats.com</p>
                 </div>
               </div>
 
@@ -194,9 +225,9 @@ const ContactForm = () => {
               </div>
             </div>
 
-            <Card className="p-6 bg-primary/5 border-primary/20">
+            <Card className="p-6 bg-green-50 border-green-200">
               <div className="flex items-center gap-3 mb-3">
-                <CheckCircle className="h-5 w-5 text-primary" />
+                <CheckCircle className="h-5 w-5 text-green-600" />
                 <h4 className="font-semibold text-foreground">Resposta Garantida</h4>
               </div>
               <p className="text-sm text-muted-foreground">
