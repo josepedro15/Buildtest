@@ -1,4 +1,5 @@
 import { MessageCircle, Github, Linkedin, Twitter } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -9,11 +10,11 @@ const Footer = () => {
           <div className="md:col-span-2">
             <div className="flex items-center gap-2 mb-4">
               <MessageCircle className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold">WhatsApp Analytics</span>
+              <span className="text-xl font-bold">ConversaFlow</span>
             </div>
             <p className="text-background/80 mb-4 max-w-md">
-              Transforme seus atendimentos do WhatsApp em insights poderosos 
-              para aumentar vendas e melhorar a experiência do cliente.
+              IA que analisa conversas do WhatsApp para gerar insights de melhoria 
+              e otimizar seus resultados de negócio.
             </p>
             <div className="flex gap-4">
               <a href="#" className="text-background/60 hover:text-primary transition-colors">
@@ -54,18 +55,24 @@ const Footer = () => {
         <div className="border-t border-background/20 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-background/60 text-sm">
-              © 2024 WhatsApp Analytics. Todos os direitos reservados.
+              © 2025 ConversaFlow Inc. Todos os direitos reservados.
             </p>
             <div className="flex gap-6 text-sm">
-              <a href="#" className="text-background/60 hover:text-primary transition-colors">
+              <Link to="/privacy-policy" className="text-background/60 hover:text-primary transition-colors">
                 Política de Privacidade
-              </a>
+              </Link>
               <a href="#" className="text-background/60 hover:text-primary transition-colors">
                 Termos de Uso
               </a>
-              <a href="#" className="text-background/60 hover:text-primary transition-colors">
+              <button 
+                onClick={() => {
+                  localStorage.removeItem('cookiesAccepted');
+                  window.location.reload();
+                }}
+                className="text-background/60 hover:text-primary transition-colors"
+              >
                 Cookies
-              </a>
+              </button>
             </div>
           </div>
         </div>
