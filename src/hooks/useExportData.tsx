@@ -599,7 +599,169 @@ export function useExportData() {
 
   const exportToPDF = async (data: DashboardData, options: ExportOptions) => {
     try {
-      // Criar conteúdo HTML para PDF com design moderno
+      // Verificar se jsPDF está disponível
+      if (typeof window !== 'undefined') {
+        // Importar jsPDF dinamicamente
+        const jsPDF = (await import('jspdf')).default;
+        const html2canvas = (await import('html2canvas')).default;
+        
+        // Criar elemento temporário para renderizar o HTML
+        const tempDiv = document.createElement('div');
+        tempDiv.style.position = 'absolute';
+        tempDiv.style.left = '-9999px';
+        tempDiv.style.top = '0';
+        tempDiv.style.width = '1200px';
+        tempDiv.style.backgroundColor = 'white';
+        tempDiv.style.padding = '20px';
+        tempDiv.style.fontFamily = 'Arial, sans-serif';
+        tempDiv.style.fontSize = '12px';
+        tempDiv.style.lineHeight = '1.4';
+        
+        // Criar conteúdo HTML para PDF
+        let htmlContent = `
+          <div style="max-width: 1200px; margin: 0 auto; background: white; padding: 20px;">
+            <!-- Cabeçalho -->
+            <div style="text-align: center; margin-bottom: 30px; padding: 20px; background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: white; border-radius: 8px;">
+              <h1 style="font-size: 24px; margin: 0 0 10px 0; font-weight: bold;">📊 RELATÓRIO WHATSAPP ANALYTICS</h1>
+              <p style="margin: 0; opacity: 0.9;">MetricaWhats - Análise de Atendimentos</p>
+            </div>
+            
+            <!-- Informações do Relatório -->
+            <div style="margin-bottom: 30px; padding: 15px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+              <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #1f2937;">📋 INFORMAÇÕES DO RELATÓRIO</h2>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px;">
+                <div><strong>Período:</strong> ${options.dateRange?.start || data.periodo_inicio} a ${options.dateRange?.end || data.periodo_fim}</div>
+                <div><strong>Gerado em:</strong> ${formatDate(new Date())}</div>
+                <div><strong>Versão:</strong> MetricaWhats Analytics v1.0</div>
+                <div><strong>Gerado por:</strong> Sistema Automático</div>
+              </div>
+            </div>
+        `;
+
+        // Adicionar métricas principais
+        if (options.includeMetrics) {
+          htmlContent += `
+            <div style="margin-bottom: 30px;">
+              <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #1f2937; border-bottom: 2px solid #25D366; padding-bottom: 5px;">📈 MÉTRICAS PRINCIPAIS</h2>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                  <div style="font-size: 10px; color: #6b7280; margin-bottom: 5px;">TOTAL DE ATENDIMENTOS</div>
+                  <div style="font-size: 20px; font-weight: bold; color: #25D366; margin-bottom: 5px;">${data.total_atendimentos?.toLocaleString('pt-BR') || '0'}</div>
+                  <div style="font-size: 10px; color: #9ca3af;">atendimentos</div>
+                </div>
+                <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                  <div style="font-size: 10px; color: #6b7280; margin-bottom: 5px;">TAXA DE CONVERSÃO</div>
+                  <div style="font-size: 20px; font-weight: bold; color: #25D366; margin-bottom: 5px;">${data.taxa_conversao?.toFixed(1) || '0'}%</div>
+                  <div style="font-size: 10px; color: #9ca3af;">percentual</div>
+                </div>
+                <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                  <div style="font-size: 10px; color: #6b7280; margin-bottom: 5px;">TEMPO MÉDIO DE RESPOSTA</div>
+                  <div style="font-size: 20px; font-weight: bold; color: #25D366; margin-bottom: 5px;">${formatTime(data.tempo_medio_resposta || 0)}</div>
+                  <div style="font-size: 10px; color: #9ca3af;">minutos</div>
+                </div>
+                <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                  <div style="font-size: 10px; color: #6b7280; margin-bottom: 5px;">SATISFAÇÃO DO CLIENTE</div>
+                                     <div style="font-size: 20px; font-weight: bold; color: #25D366; margin-bottom: 5px;">${data.nota_media_qualidade?.toFixed(1) || '0'}/5</div>
+                  <div style="font-size: 10px; color: #9ca3af;">pontos</div>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        // Adicionar insights se solicitado
+        if (options.includeInsights) {
+          htmlContent += `
+            <div style="margin-bottom: 30px;">
+              <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #1f2937; border-bottom: 2px solid #25D366; padding-bottom: 5px;">💡 INSIGHTS E RECOMENDAÇÕES</h2>
+              <div style="display: grid; grid-template-columns: 1fr; gap: 15px;">
+                <div style="background: white; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; border-left: 4px solid #10b981;">
+                  <h3 style="font-size: 14px; margin: 0 0 10px 0; color: #10b981;">🎯 Oportunidade de Melhoria</h3>
+                  <p style="font-size: 12px; margin: 0; color: #374151;">Sua taxa de conversão está ${(data.taxa_conversao || 0) > 20 ? 'excelente' : 'boa, mas pode melhorar'}. Considere implementar automações para aumentar ainda mais os resultados.</p>
+                </div>
+                <div style="background: white; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; border-left: 4px solid #f59e0b;">
+                  <h3 style="font-size: 14px; margin: 0 0 10px 0; color: #f59e0b;">⚡ Otimização de Processos</h3>
+                  <p style="font-size: 12px; margin: 0; color: #374151;">O tempo médio de resposta de ${formatTime(data.tempo_medio_resposta || 0)} pode ser otimizado com respostas automáticas e templates.</p>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        // Adicionar rodapé
+        htmlContent += `
+            <div style="margin-top: 40px; padding: 20px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center;">
+              <div style="font-size: 14px; font-weight: bold; color: #25D366; margin-bottom: 5px;">MetricaWhats Analytics</div>
+              <div style="font-size: 10px; color: #6b7280;">
+                <p style="margin: 2px 0;">Relatório gerado automaticamente</p>
+                <p style="margin: 2px 0;">© 2024 MetricaWhats - Todos os direitos reservados</p>
+                <p style="margin: 2px 0;">📧 contato@metricawhats.com | 📱 +55 31 99495-9512</p>
+              </div>
+            </div>
+          </div>
+        `;
+
+        // Inserir o HTML no elemento temporário
+        tempDiv.innerHTML = htmlContent;
+        document.body.appendChild(tempDiv);
+
+        // Aguardar um pouco para o DOM ser renderizado
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        // Capturar o elemento como canvas
+        const canvas = await html2canvas(tempDiv, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          width: 1200,
+          height: tempDiv.scrollHeight
+        });
+
+        // Remover o elemento temporário
+        document.body.removeChild(tempDiv);
+
+        // Criar PDF
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const imgWidth = 210; // A4 width in mm
+        const pageHeight = 295; // A4 height in mm
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        let heightLeft = imgHeight;
+
+        let position = 0;
+
+        // Adicionar primeira página
+        pdf.addImage(canvas, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+
+        // Adicionar páginas adicionais se necessário
+        while (heightLeft >= 0) {
+          position = heightLeft - imgHeight;
+          pdf.addPage();
+          pdf.addImage(canvas, 'PNG', 0, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+        }
+
+        // Salvar PDF
+        pdf.save(`whatsapp-analytics-${new Date().toISOString().split('T')[0]}.pdf`);
+
+        toast({
+          title: "PDF Exportado",
+          description: "O relatório foi exportado como PDF com sucesso!",
+        });
+      } else {
+        throw new Error('jsPDF não está disponível');
+      }
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error);
+      
+      // Fallback: gerar HTML se jsPDF falhar
+      toast({
+        title: "Aviso",
+        description: "Gerando HTML como alternativa. Você pode imprimir como PDF no navegador.",
+      });
+      
+      // Gerar HTML como fallback
       let htmlContent = `
         <!DOCTYPE html>
         <html>
@@ -607,707 +769,25 @@ export function useExportData() {
           <meta charset="utf-8">
           <title>Relatório WhatsApp Analytics</title>
           <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-            
-            * {
-              margin: 0;
-              padding: 0;
-              box-sizing: border-box;
-            }
-            
-            body { 
-              font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-              line-height: 1.6;
-              color: #1f2937;
-              background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-              min-height: 100vh;
-            }
-            
-            .container {
-              max-width: 1200px;
-              margin: 0 auto;
-              padding: 40px 20px;
-              background: white;
-              box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-              border-radius: 16px;
-              margin-top: 20px;
-              margin-bottom: 20px;
-            }
-            
-            .header {
-              text-align: center;
-              margin-bottom: 40px;
-              padding-bottom: 30px;
-              border-bottom: 3px solid #25D366;
-              background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-              color: white;
-              padding: 30px;
-              border-radius: 12px;
-              margin: -40px -20px 40px -20px;
-            }
-            
-            .header h1 {
-              font-size: 2.5rem;
-              font-weight: 700;
-              margin-bottom: 10px;
-              text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            }
-            
-            .header .subtitle {
-              font-size: 1.1rem;
-              opacity: 0.9;
-              font-weight: 400;
-            }
-            
-            .info-grid {
-              display: grid;
-              grid-template-columns: 1fr 1fr;
-              gap: 20px;
-              margin-bottom: 40px;
-              background: #f8fafc;
-              padding: 20px;
-              border-radius: 12px;
-              border: 1px solid #e2e8f0;
-            }
-            
-            .info-item {
-              display: flex;
-              align-items: center;
-              gap: 10px;
-            }
-            
-            .info-item strong {
-              color: #25D366;
-              font-weight: 600;
-            }
-            
-            .section {
-              margin-bottom: 40px;
-              page-break-inside: avoid;
-            }
-            
-            .section-title {
-              font-size: 1.5rem;
-              font-weight: 600;
-              color: #1f2937;
-              margin-bottom: 20px;
-              padding-bottom: 10px;
-              border-bottom: 2px solid #25D366;
-              display: flex;
-              align-items: center;
-              gap: 10px;
-            }
-            
-            .metrics-grid {
-              display: grid;
-              grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-              gap: 20px;
-              margin-bottom: 30px;
-            }
-            
-            .metric-card {
-              background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-              border: 1px solid #e2e8f0;
-              border-radius: 12px;
-              padding: 20px;
-              box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-              transition: transform 0.2s ease;
-            }
-            
-            .metric-card:hover {
-              transform: translateY(-2px);
-            }
-            
-            .metric-title {
-              font-size: 0.875rem;
-              font-weight: 500;
-              color: #6b7280;
-              margin-bottom: 8px;
-              text-transform: uppercase;
-              letter-spacing: 0.05em;
-            }
-            
-            .metric-value {
-              font-size: 2rem;
-              font-weight: 700;
-              color: #25D366;
-              margin-bottom: 5px;
-            }
-            
-            .metric-description {
-              font-size: 0.875rem;
-              color: #9ca3af;
-            }
-            
-            .table-container {
-              background: white;
-              border-radius: 12px;
-              overflow: hidden;
-              box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-              border: 1px solid #e2e8f0;
-            }
-            
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              font-size: 0.875rem;
-            }
-            
-            th {
-              background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-              color: white;
-              font-weight: 600;
-              padding: 15px 20px;
-              text-align: left;
-              font-size: 0.875rem;
-            }
-            
-            td {
-              padding: 15px 20px;
-              border-bottom: 1px solid #e2e8f0;
-              font-weight: 500;
-            }
-            
-            tr:nth-child(even) {
-              background: #f8fafc;
-            }
-            
-            tr:hover {
-              background: #f1f5f9;
-            }
-            
-            .insights-grid {
-              display: grid;
-              grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-              gap: 20px;
-            }
-            
-            .insight-card {
-              background: white;
-              border-radius: 12px;
-              padding: 20px;
-              box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-              border: 1px solid #e2e8f0;
-              border-left: 4px solid #25D366;
-            }
-            
-            .insight-card.positive {
-              border-left-color: #10b981;
-              background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
-            }
-            
-            .insight-card.negative {
-              border-left-color: #ef4444;
-              background: linear-gradient(135deg, #fef2f2 0%, #fef2f2 100%);
-            }
-            
-            .insight-title {
-              font-weight: 600;
-              color: #1f2937;
-              margin-bottom: 10px;
-              display: flex;
-              align-items: center;
-              gap: 8px;
-            }
-            
-            .insight-content {
-              color: #6b7280;
-              font-size: 0.875rem;
-              line-height: 1.5;
-            }
-            
-            .highlights-grid {
-              display: grid;
-              grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-              gap: 20px;
-            }
-            
-            .highlight-card {
-              background: white;
-              border-radius: 12px;
-              padding: 20px;
-              box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-              border: 1px solid #e2e8f0;
-            }
-            
-            .highlight-card.best {
-              border-left: 4px solid #10b981;
-              background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
-            }
-            
-            .highlight-card.critical {
-              border-left: 4px solid #ef4444;
-              background: linear-gradient(135deg, #fef2f2 0%, #fef2f2 100%);
-            }
-            
-            .highlight-header {
-              display: flex;
-              justify-content: between;
-              align-items: center;
-              margin-bottom: 15px;
-            }
-            
-            .highlight-title {
-              font-weight: 600;
-              color: #1f2937;
-              display: flex;
-              align-items: center;
-              gap: 8px;
-            }
-            
-            .highlight-badge {
-              background: #25D366;
-              color: white;
-              padding: 4px 12px;
-              border-radius: 20px;
-              font-size: 0.75rem;
-              font-weight: 600;
-            }
-            
-            .highlight-badge.critical {
-              background: #ef4444;
-            }
-            
-            .highlight-info {
-              margin-bottom: 10px;
-            }
-            
-            .highlight-info strong {
-              color: #25D366;
-              font-weight: 600;
-            }
-            
-            .highlight-description {
-              color: #6b7280;
-              font-size: 0.875rem;
-              line-height: 1.5;
-            }
-            
-            .progress-bar {
-              width: 100%;
-              height: 8px;
-              background: #e2e8f0;
-              border-radius: 4px;
-              overflow: hidden;
-              margin: 10px 0;
-            }
-            
-            .progress-fill {
-              height: 100%;
-              background: linear-gradient(90deg, #25D366 0%, #128C7E 100%);
-              border-radius: 4px;
-              transition: width 0.3s ease;
-            }
-            
-            .footer {
-              margin-top: 60px;
-              padding-top: 30px;
-              border-top: 2px solid #e2e8f0;
-              text-align: center;
-              color: #6b7280;
-              font-size: 0.875rem;
-            }
-            
-            .footer-content {
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              flex-wrap: wrap;
-              gap: 20px;
-            }
-            
-                         .footer-logo {
-               font-weight: 600;
-               color: #25D366;
-             }
-             
-             .status-badge {
-               padding: 4px 12px;
-               border-radius: 20px;
-               font-size: 0.75rem;
-               font-weight: 600;
-               text-transform: uppercase;
-               letter-spacing: 0.05em;
-             }
-             
-             .status-badge.positive {
-               background: #10b981;
-               color: white;
-             }
-             
-             .status-badge.negative {
-               background: #ef4444;
-               color: white;
-             }
-             
-             .status-badge.neutral {
-               background: #6b7280;
-               color: white;
-             }
-            
-            @media print {
-              body {
-                background: white;
-              }
-              .container {
-                box-shadow: none;
-                margin: 0;
-                padding: 20px;
-              }
-              .header {
-                margin: 0 0 30px 0;
-                border-radius: 8px;
-              }
-            }
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            .header { text-align: center; margin-bottom: 30px; }
+            .metric { margin-bottom: 20px; }
           </style>
         </head>
         <body>
-          <div class="container">
-            <div class="header">
-              <h1>📊 Relatório WhatsApp Analytics</h1>
-              <div class="subtitle">Análise completa dos atendimentos e performance</div>
-            </div>
-            
-            <div class="info-grid">
-              <div class="info-item">
-                <strong>📅 Período:</strong> ${options.dateRange?.start || data.periodo_inicio} a ${options.dateRange?.end || data.periodo_fim}
-              </div>
-              <div class="info-item">
-                <strong>🕒 Gerado em:</strong> ${new Date().toLocaleString('pt-BR')}
-              </div>
-            </div>
-      `;
-
-      if (options.includeMetrics) {
-        htmlContent += `
-          <div class="section">
-            <h2 class="section-title">📈 Métricas Principais</h2>
-            <div class="metrics-grid">
-              <div class="metric-card">
-                <div class="metric-title">Total de Atendimentos</div>
-                <div class="metric-value">${data.total_atendimentos?.toLocaleString() || 0}</div>
-                <div class="metric-description">Conversas realizadas no período</div>
-              </div>
-              <div class="metric-card">
-                <div class="metric-title">Taxa de Conversão</div>
-                <div class="metric-value">${data.taxa_conversao?.toFixed(1) || 0}%</div>
-                <div class="metric-description">Percentual de vendas realizadas</div>
-              </div>
-              <div class="metric-card">
-                <div class="metric-title">Tempo Médio de Resposta</div>
-                <div class="metric-value">${Math.floor((data.tempo_medio_resposta || 0) / 60)}m ${(data.tempo_medio_resposta || 0) % 60}s</div>
-                <div class="metric-description">Velocidade média de resposta</div>
-              </div>
-              <div class="metric-card">
-                <div class="metric-title">Nota Média de Qualidade</div>
-                <div class="metric-value">${data.nota_media_qualidade?.toFixed(1) || 0}/5</div>
-                <div class="metric-description">Satisfação média dos clientes</div>
-              </div>
-            </div>
+          <div class="header">
+            <h1>📊 RELATÓRIO WHATSAPP ANALYTICS</h1>
+            <p>MetricaWhats - ${formatDate(new Date())}</p>
           </div>
-        `;
-      }
-
-      if (options.includeIntentions) {
-        htmlContent += `
-          <div class="section">
-            <h2 class="section-title">🎯 Intenções dos Clientes</h2>
-            <div class="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Intenção</th>
-                    <th>Percentual</th>
-                    <th>Progresso</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>🛒 Compra</td>
-                    <td>${data.intencao_compra?.toFixed(1) || 0}%</td>
-                    <td>
-                      <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${data.intencao_compra || 0}%"></div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>❓ Dúvida Geral</td>
-                    <td>${data.intencao_duvida_geral?.toFixed(1) || 0}%</td>
-                    <td>
-                      <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${data.intencao_duvida_geral || 0}%"></div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>⚠️ Reclamação</td>
-                    <td>${data.intencao_reclamacao?.toFixed(1) || 0}%</td>
-                    <td>
-                      <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${data.intencao_reclamacao || 0}%"></div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>🛠️ Suporte</td>
-                    <td>${data.intencao_suporte?.toFixed(1) || 0}%</td>
-                    <td>
-                      <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${data.intencao_suporte || 0}%"></div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>💰 Orçamento</td>
-                    <td>${data.intencao_orcamento?.toFixed(1) || 0}%</td>
-                    <td>
-                      <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${data.intencao_orcamento || 0}%"></div>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        `;
-      }
-
-      if (options.includeInsights && (data.insights_funcionou?.length || data.insights_atrapalhou?.length)) {
-        htmlContent += `
-          <div class="section">
-            <h2 class="section-title">💡 Insights de Performance</h2>
-            <div class="insights-grid">
-        `;
-        
-        if (data.insights_funcionou?.length) {
-          htmlContent += `
-            <div class="insight-card positive">
-              <div class="insight-title">✅ O que Funcionou</div>
-          `;
-          data.insights_funcionou.forEach(insight => {
-            const [title, description] = insight.split(': ');
-            htmlContent += `
-              <div class="insight-content">
-                <strong>${title}:</strong> ${description}
-              </div>
-            `;
-          });
-          htmlContent += `</div>`;
-        }
-        
-        if (data.insights_atrapalhou?.length) {
-          htmlContent += `
-            <div class="insight-card negative">
-              <div class="insight-title">❌ O que Atrapalhou</div>
-          `;
-          data.insights_atrapalhou.forEach(insight => {
-            const [title, description] = insight.split(': ');
-            htmlContent += `
-              <div class="insight-content">
-                <strong>${title}:</strong> ${description}
-              </div>
-            `;
-          });
-          htmlContent += `</div>`;
-        }
-        
-        htmlContent += `
-            </div>
-          </div>
-        `;
-      }
-
-      if (options.includeHighlights) {
-        htmlContent += `
-          <div class="section">
-            <h2 class="section-title">🏆 Destaques do Período</h2>
-            <div class="highlights-grid">
-        `;
-        
-        if (data.melhor_atendimento_cliente) {
-          htmlContent += `
-            <div class="highlight-card best">
-              <div class="highlight-header">
-                <div class="highlight-title">⭐ Melhor Atendimento</div>
-                <div class="highlight-badge">${data.melhor_atendimento_nota?.toFixed(1) || 0}/5</div>
-              </div>
-              <div class="highlight-info">
-                <strong>Cliente:</strong> ${data.melhor_atendimento_cliente}
-              </div>
-              <div class="highlight-description">
-                ${data.melhor_atendimento_observacao || ''}
-              </div>
-            </div>
-          `;
-        }
-        
-        if (data.atendimento_critico_cliente) {
-          htmlContent += `
-            <div class="highlight-card critical">
-              <div class="highlight-header">
-                <div class="highlight-title">⚠️ Atendimento Crítico</div>
-                <div class="highlight-badge critical">${data.atendimento_critico_nota?.toFixed(1) || 0}/5</div>
-              </div>
-              <div class="highlight-info">
-                <strong>Cliente:</strong> ${data.atendimento_critico_cliente}
-              </div>
-              <div class="highlight-description">
-                ${data.atendimento_critico_observacao || ''}
-              </div>
-            </div>
-          `;
-        }
-        
-        if (!data.melhor_atendimento_cliente && !data.atendimento_critico_cliente) {
-          htmlContent += `
-            <div class="highlight-card">
-              <div class="highlight-title">📊 Nenhum destaque registrado</div>
-              <div class="highlight-description">
-                Os destaques aparecerão conforme os dados forem analisados e registrados.
-              </div>
-            </div>
-          `;
-        }
-        
-        htmlContent += `
-            </div>
-          </div>
-        `;
-      }
-
-      if (options.includeAutomation && data.automacao_sugerida?.length) {
-        htmlContent += `
-          <div class="section">
-            <h2 class="section-title">🤖 Automação Sugerida</h2>
-            <div class="insights-grid">
-        `;
-        data.automacao_sugerida.forEach(automacao => {
-          const [title, description] = automacao.split(': ');
-          htmlContent += `
-            <div class="insight-card">
-              <div class="insight-title">⚡ ${title}</div>
-              <div class="insight-content">${description}</div>
-            </div>
-          `;
-        });
-        htmlContent += `
-            </div>
-          </div>
-        `;
-      }
-
-      if (options.includeActions && data.proximas_acoes?.length) {
-        htmlContent += `
-          <div class="section">
-            <h2 class="section-title">📋 Próximas Ações</h2>
-            <div class="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Ação</th>
-                    <th>Status</th>
-                    <th>Prazo</th>
-                  </tr>
-                </thead>
-                <tbody>
-        `;
-        data.proximas_acoes.forEach(acao => {
-          const match = acao.match(/^(.*?)\s*–\s*(.*?)\s*\((\d{4}-\d{2}-\d{2})\)$/);
-          if (match) {
-            const [, title, status, deadline] = match;
-            const statusClass = status === 'Feito' ? 'positive' : status === 'Em andamento' ? 'neutral' : 'negative';
-            htmlContent += `
-              <tr>
-                <td>${title}</td>
-                <td><span class="status-badge ${statusClass}">${status}</span></td>
-                <td>${deadline}</td>
-              </tr>
-            `;
-          } else {
-            htmlContent += `
-              <tr>
-                <td>${acao}</td>
-                <td><span class="status-badge neutral">Pendente</span></td>
-                <td>-</td>
-              </tr>
-            `;
-          }
-        });
-        htmlContent += `
-                </tbody>
-              </table>
-            </div>
-          </div>
-        `;
-      }
-
-      if (options.includeGoals) {
-        htmlContent += `
-          <div class="section">
-            <h2 class="section-title">🎯 Metas e Progresso</h2>
-            <div class="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Meta</th>
-                    <th>Progresso Atual</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>📈 Taxa de Conversão</td>
-                    <td>${data.meta_taxa_conversao || 'Não definida'}</td>
-                    <td>
-                      <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${((data.taxa_conversao || 0) / 30) * 100}%"></div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>⏱️ Tempo de Resposta</td>
-                    <td>${data.meta_tempo_resposta || 'Não definida'}</td>
-                    <td>
-                      <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${Math.max(0, 100 - ((data.tempo_medio_resposta || 0) / 120) * 100)}%"></div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>⭐ Nota de Qualidade</td>
-                    <td>${data.meta_nota_qualidade || 'Não definida'}</td>
-                    <td>
-                      <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${((data.nota_media_qualidade || 0) / 4.5) * 100}%"></div>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        `;
-      }
-
-      htmlContent += `
-          </div>
-          
-          <div class="footer">
-            <div class="footer-content">
-              <div class="footer-logo">MetricaWhats Analytics</div>
-              <div>
-                <p>Relatório gerado automaticamente</p>
-                <p>© 2024 MetricaWhats - Todos os direitos reservados</p>
-              </div>
-            </div>
+          <div class="metric">
+            <h3>Total de Atendimentos: ${data.total_atendimentos?.toLocaleString('pt-BR') || '0'}</h3>
+            <h3>Taxa de Conversão: ${data.taxa_conversao?.toFixed(1) || '0'}%</h3>
+            <h3>Tempo Médio de Resposta: ${formatTime(data.tempo_medio_resposta || 0)}</h3>
           </div>
         </body>
         </html>
       `;
 
-      // Criar blob e download
       const blob = new Blob([htmlContent], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -1317,18 +797,6 @@ export function useExportData() {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-
-      toast({
-        title: "PDF Exportado",
-        description: "O relatório foi exportado como HTML. Você pode abrir no navegador e imprimir como PDF.",
-      });
-    } catch (error) {
-      console.error('Erro ao gerar PDF:', error);
-      toast({
-        title: "Erro na exportação",
-        description: "Não foi possível gerar o PDF. Tente novamente.",
-        variant: "destructive"
-      });
     }
   };
 
