@@ -10,6 +10,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { useDashboardData } from '@/hooks/useDashboardData';
+import { useTheme } from '@/hooks/useTheme';
 import { ExportModal } from '@/components/ExportModal';
 import { FilterModal } from '@/components/FilterModal';
 import { useWhatsAppInstances } from '@/hooks/useWhatsAppInstances';
@@ -40,7 +41,9 @@ import {
   Activity,
   Eye,
   RefreshCw,
-  Crown
+  Crown,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 interface MetricCard {
@@ -57,6 +60,7 @@ export default function Dashboard() {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { theme, toggleTheme, isDark } = useTheme();
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   
@@ -463,6 +467,27 @@ export default function Dashboard() {
                   <Crown className="h-4 w-4" />
                 </Button>
               )}
+              {/* Botão de alternância de tema */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={toggleTheme}
+                    className="rounded-full hover:bg-accent"
+                  >
+                    {isDark ? (
+                      <Sun className="h-4 w-4 transition-all duration-200 hover:rotate-12" />
+                    ) : (
+                      <Moon className="h-4 w-4 transition-all duration-200 hover:rotate-12" />
+                    )}
+                    <span className="sr-only">Alternar tema</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{isDark ? 'Alternar para tema claro' : 'Alternar para tema escuro'}</p>
+                </TooltipContent>
+              </Tooltip>
               <Button variant="ghost" size="sm" className="rounded-full">
                 <Settings className="h-4 w-4" />
               </Button>
