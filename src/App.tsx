@@ -16,6 +16,8 @@ const Dashboard = lazy(() => import("./pages/Dashboard"));
 const WhatsAppConnect = lazy(() => import("./pages/WhatsAppConnect"));
 const Admin = lazy(() => import("./pages/Admin"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const TermsOfService = lazy(() => import("./pages/TermsOfService"));
+const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -37,6 +39,8 @@ const App = () => {
                     <Route path="/whatsapp-connect" element={<WhatsAppConnect />} />
                     <Route path="/admin" element={<Admin />} />
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                    <Route path="/terms-of-service" element={<TermsOfService />} />
+                    <Route path="/cookie-policy" element={<CookiePolicy />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>

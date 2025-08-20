@@ -61,9 +61,12 @@ const Footer = () => {
               <Link to="/privacy-policy" className="text-background/60 hover:text-primary transition-colors">
                 Política de Privacidade
               </Link>
-              <a href="#" className="text-background/60 hover:text-primary transition-colors">
+              <Link to="/terms-of-service" className="text-background/60 hover:text-primary transition-colors">
                 Termos de Uso
-              </a>
+              </Link>
+              <Link to="/cookie-policy" className="text-background/60 hover:text-primary transition-colors">
+                Política de Cookies
+              </Link>
               <button 
                 onClick={() => {
                   localStorage.removeItem('cookiesAccepted');
@@ -71,7 +74,7 @@ const Footer = () => {
                 }}
                 className="text-background/60 hover:text-primary transition-colors"
               >
-                Cookies
+                Gerenciar Cookies
               </button>
             </div>
           </div>
