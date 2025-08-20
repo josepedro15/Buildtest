@@ -661,7 +661,7 @@ export function useExportData() {
                 </div>
                 <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                   <div style="font-size: 10px; color: #6b7280; margin-bottom: 5px;">SATISFAÇÃO DO CLIENTE</div>
-                                     <div style="font-size: 20px; font-weight: bold; color: #25D366; margin-bottom: 5px;">${data.nota_media_qualidade?.toFixed(1) || '0'}/5</div>
+                  <div style="font-size: 20px; font-weight: bold; color: #25D366; margin-bottom: 5px;">${data.nota_media_qualidade?.toFixed(1) || '0'}/5</div>
                   <div style="font-size: 10px; color: #9ca3af;">pontos</div>
                 </div>
               </div>
@@ -669,8 +669,303 @@ export function useExportData() {
           `;
         }
 
-        // Adicionar insights se solicitado
-        if (options.includeInsights) {
+        // Adicionar intenções dos clientes
+        if (options.includeIntentions) {
+          htmlContent += `
+            <div style="margin-bottom: 30px;">
+              <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #1f2937; border-bottom: 2px solid #25D366; padding-bottom: 5px;">🎯 INTENÇÕES DOS CLIENTES</h2>
+              <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                  <thead>
+                    <tr style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: white;">
+                      <th style="padding: 12px 15px; text-align: left; font-weight: 600;">Intenção</th>
+                      <th style="padding: 12px 15px; text-align: left; font-weight: 600;">Percentual</th>
+                      <th style="padding: 12px 15px; text-align: left; font-weight: 600;">Progresso</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                      <td style="padding: 12px 15px;">🛒 Compra</td>
+                      <td style="padding: 12px 15px;">${data.intencao_compra?.toFixed(1) || '0'}%</td>
+                      <td style="padding: 12px 15px;">
+                        <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                          <div style="height: 100%; background: linear-gradient(90deg, #25D366 0%, #128C7E 100%); width: ${data.intencao_compra || 0}%; border-radius: 4px;"></div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+                      <td style="padding: 12px 15px;">❓ Dúvida Geral</td>
+                      <td style="padding: 12px 15px;">${data.intencao_duvida_geral?.toFixed(1) || '0'}%</td>
+                      <td style="padding: 12px 15px;">
+                        <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                          <div style="height: 100%; background: linear-gradient(90deg, #25D366 0%, #128C7E 100%); width: ${data.intencao_duvida_geral || 0}%; border-radius: 4px;"></div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                      <td style="padding: 12px 15px;">⚠️ Reclamação</td>
+                      <td style="padding: 12px 15px;">${data.intencao_reclamacao?.toFixed(1) || '0'}%</td>
+                      <td style="padding: 12px 15px;">
+                        <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                          <div style="height: 100%; background: linear-gradient(90deg, #25D366 0%, #128C7E 100%); width: ${data.intencao_reclamacao || 0}%; border-radius: 4px;"></div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+                      <td style="padding: 12px 15px;">🛠️ Suporte</td>
+                      <td style="padding: 12px 15px;">${data.intencao_suporte?.toFixed(1) || '0'}%</td>
+                      <td style="padding: 12px 15px;">
+                        <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                          <div style="height: 100%; background: linear-gradient(90deg, #25D366 0%, #128C7E 100%); width: ${data.intencao_suporte || 0}%; border-radius: 4px;"></div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 12px 15px;">💰 Orçamento</td>
+                      <td style="padding: 12px 15px;">${data.intencao_orcamento?.toFixed(1) || '0'}%</td>
+                      <td style="padding: 12px 15px;">
+                        <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                          <div style="height: 100%; background: linear-gradient(90deg, #25D366 0%, #128C7E 100%); width: ${data.intencao_orcamento || 0}%; border-radius: 4px;"></div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          `;
+        }
+
+        // Adicionar insights detalhados
+        if (options.includeInsights && (data.insights_funcionou?.length || data.insights_atrapalhou?.length)) {
+          htmlContent += `
+            <div style="margin-bottom: 30px;">
+              <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #1f2937; border-bottom: 2px solid #25D366; padding-bottom: 5px;">💡 INSIGHTS DE PERFORMANCE</h2>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+          `;
+          
+          if (data.insights_funcionou?.length) {
+            htmlContent += `
+              <div style="background: white; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; border-left: 4px solid #10b981;">
+                <h3 style="font-size: 14px; margin: 0 0 10px 0; color: #10b981;">✅ O que Funcionou</h3>
+            `;
+            data.insights_funcionou.forEach(insight => {
+              const [title, description] = insight.split(': ');
+              htmlContent += `
+                <div style="font-size: 12px; color: #374151; margin-bottom: 8px;">
+                  <strong>${title}:</strong> ${description}
+                </div>
+              `;
+            });
+            htmlContent += `</div>`;
+          }
+          
+          if (data.insights_atrapalhou?.length) {
+            htmlContent += `
+              <div style="background: white; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; border-left: 4px solid #ef4444;">
+                <h3 style="font-size: 14px; margin: 0 0 10px 0; color: #ef4444;">❌ O que Atrapalhou</h3>
+            `;
+            data.insights_atrapalhou.forEach(insight => {
+              const [title, description] = insight.split(': ');
+              htmlContent += `
+                <div style="font-size: 12px; color: #374151; margin-bottom: 8px;">
+                  <strong>${title}:</strong> ${description}
+                </div>
+              `;
+            });
+            htmlContent += `</div>`;
+          }
+          
+          htmlContent += `
+              </div>
+            </div>
+          `;
+        }
+
+        // Adicionar destaques do período
+        if (options.includeHighlights) {
+          htmlContent += `
+            <div style="margin-bottom: 30px;">
+              <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #1f2937; border-bottom: 2px solid #25D366; padding-bottom: 5px;">🏆 DESTAQUES DO PERÍODO</h2>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+          `;
+          
+          if (data.melhor_atendimento_cliente) {
+            htmlContent += `
+              <div style="background: white; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; border-left: 4px solid #10b981;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                  <h3 style="font-size: 14px; margin: 0; color: #10b981;">⭐ Melhor Atendimento</h3>
+                  <span style="background: #10b981; color: white; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: 600;">${data.melhor_atendimento_nota?.toFixed(1) || '0'}/5</span>
+                </div>
+                <div style="font-size: 12px; color: #374151; margin-bottom: 5px;">
+                  <strong>Cliente:</strong> ${data.melhor_atendimento_cliente}
+                </div>
+                <div style="font-size: 11px; color: #6b7280;">
+                  ${data.melhor_atendimento_observacao || ''}
+                </div>
+              </div>
+            `;
+          }
+          
+          if (data.atendimento_critico_cliente) {
+            htmlContent += `
+              <div style="background: white; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; border-left: 4px solid #ef4444;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                  <h3 style="font-size: 14px; margin: 0; color: #ef4444;">⚠️ Atendimento Crítico</h3>
+                  <span style="background: #ef4444; color: white; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: 600;">${data.atendimento_critico_nota?.toFixed(1) || '0'}/5</span>
+                </div>
+                <div style="font-size: 12px; color: #374151; margin-bottom: 5px;">
+                  <strong>Cliente:</strong> ${data.atendimento_critico_cliente}
+                </div>
+                <div style="font-size: 11px; color: #6b7280;">
+                  ${data.atendimento_critico_observacao || ''}
+                </div>
+              </div>
+            `;
+          }
+          
+          if (!data.melhor_atendimento_cliente && !data.atendimento_critico_cliente) {
+            htmlContent += `
+              <div style="background: white; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
+                <h3 style="font-size: 14px; margin: 0 0 10px 0; color: #1f2937;">📊 Nenhum destaque registrado</h3>
+                <div style="font-size: 11px; color: #6b7280;">
+                  Os destaques aparecerão conforme os dados forem analisados e registrados.
+                </div>
+              </div>
+            `;
+          }
+          
+          htmlContent += `
+              </div>
+            </div>
+          `;
+        }
+
+        // Adicionar automação sugerida
+        if (options.includeAutomation && data.automacao_sugerida?.length) {
+          htmlContent += `
+            <div style="margin-bottom: 30px;">
+              <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #1f2937; border-bottom: 2px solid #25D366; padding-bottom: 5px;">🤖 AUTOMAÇÃO SUGERIDA</h2>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+          `;
+          data.automacao_sugerida.forEach(automacao => {
+            const [title, description] = automacao.split(': ');
+            htmlContent += `
+              <div style="background: white; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; border-left: 4px solid #25D366;">
+                <h3 style="font-size: 14px; margin: 0 0 10px 0; color: #25D366;">⚡ ${title}</h3>
+                <div style="font-size: 12px; color: #374151;">${description}</div>
+              </div>
+            `;
+          });
+          htmlContent += `
+              </div>
+            </div>
+          `;
+        }
+
+        // Adicionar próximas ações
+        if (options.includeActions && data.proximas_acoes?.length) {
+          htmlContent += `
+            <div style="margin-bottom: 30px;">
+              <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #1f2937; border-bottom: 2px solid #25D366; padding-bottom: 5px;">📋 PRÓXIMAS AÇÕES</h2>
+              <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                  <thead>
+                    <tr style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: white;">
+                      <th style="padding: 12px 15px; text-align: left; font-weight: 600;">Ação</th>
+                      <th style="padding: 12px 15px; text-align: left; font-weight: 600;">Status</th>
+                      <th style="padding: 12px 15px; text-align: left; font-weight: 600;">Prazo</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+          `;
+          data.proximas_acoes.forEach((acao, index) => {
+            const match = acao.match(/^(.*?)\s*–\s*(.*?)\s*\((\d{4}-\d{2}-\d{2})\)$/);
+            if (match) {
+              const [, title, status, deadline] = match;
+              const statusColor = status === 'Feito' ? '#10b981' : status === 'Em andamento' ? '#f59e0b' : '#ef4444';
+              const bgColor = index % 2 === 0 ? 'white' : '#f8fafc';
+              htmlContent += `
+                <tr style="border-bottom: 1px solid #e2e8f0; background: ${bgColor};">
+                  <td style="padding: 12px 15px;">${title}</td>
+                  <td style="padding: 12px 15px;">
+                    <span style="background: ${statusColor}; color: white; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: 600;">${status}</span>
+                  </td>
+                  <td style="padding: 12px 15px;">${deadline}</td>
+                </tr>
+              `;
+            } else {
+              const bgColor = index % 2 === 0 ? 'white' : '#f8fafc';
+              htmlContent += `
+                <tr style="border-bottom: 1px solid #e2e8f0; background: ${bgColor};">
+                  <td style="padding: 12px 15px;">${acao}</td>
+                  <td style="padding: 12px 15px;">
+                    <span style="background: #6b7280; color: white; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: 600;">Pendente</span>
+                  </td>
+                  <td style="padding: 12px 15px;">-</td>
+                </tr>
+              `;
+            }
+          });
+          htmlContent += `
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          `;
+        }
+
+        // Adicionar metas e progresso
+        if (options.includeGoals) {
+          htmlContent += `
+            <div style="margin-bottom: 30px;">
+              <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #1f2937; border-bottom: 2px solid #25D366; padding-bottom: 5px;">🎯 METAS E PROGRESSO</h2>
+              <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                  <thead>
+                    <tr style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: white;">
+                      <th style="padding: 12px 15px; text-align: left; font-weight: 600;">Meta</th>
+                      <th style="padding: 12px 15px; text-align: left; font-weight: 600;">Progresso Atual</th>
+                      <th style="padding: 12px 15px; text-align: left; font-weight: 600;">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                      <td style="padding: 12px 15px;">📈 Taxa de Conversão</td>
+                      <td style="padding: 12px 15px;">${data.meta_taxa_conversao || 'Não definida'}</td>
+                      <td style="padding: 12px 15px;">
+                        <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                          <div style="height: 100%; background: linear-gradient(90deg, #25D366 0%, #128C7E 100%); width: ${Math.min(100, ((data.taxa_conversao || 0) / 30) * 100)}%; border-radius: 4px;"></div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+                      <td style="padding: 12px 15px;">⏱️ Tempo de Resposta</td>
+                      <td style="padding: 12px 15px;">${data.meta_tempo_resposta || 'Não definida'}</td>
+                      <td style="padding: 12px 15px;">
+                        <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                          <div style="height: 100%; background: linear-gradient(90deg, #25D366 0%, #128C7E 100%); width: ${Math.max(0, Math.min(100, 100 - ((data.tempo_medio_resposta || 0) / 120) * 100))}%; border-radius: 4px;"></div>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 12px 15px;">⭐ Nota de Qualidade</td>
+                      <td style="padding: 12px 15px;">${data.meta_nota_qualidade || 'Não definida'}</td>
+                      <td style="padding: 12px 15px;">
+                        <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                          <div style="height: 100%; background: linear-gradient(90deg, #25D366 0%, #128C7E 100%); width: ${Math.min(100, ((data.nota_media_qualidade || 0) / 4.5) * 100)}%; border-radius: 4px;"></div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          `;
+        }
+
+        // Adicionar insights básicos se não houver insights detalhados
+        if (options.includeInsights && (!data.insights_funcionou?.length && !data.insights_atrapalhou?.length)) {
           htmlContent += `
             <div style="margin-bottom: 30px;">
               <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #1f2937; border-bottom: 2px solid #25D366; padding-bottom: 5px;">💡 INSIGHTS E RECOMENDAÇÕES</h2>
