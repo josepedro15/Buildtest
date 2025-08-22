@@ -1,4 +1,4 @@
-# MetricaWhats - Analytics para WhatsApp
+# MetricsIA - Analytics para WhatsApp
 
 Uma plataforma completa de analytics para WhatsApp que transforma conversas em insights poderosos para otimização de vendas e automação inteligente.
 
@@ -53,8 +53,8 @@ docs/                          # Documentação
 
 1. **Clone o repositório**
 ```bash
-git clone https://github.com/seu-usuario/metricawhats.git
-cd metricawhats
+git clone https://github.com/seu-usuario/metricsia.git
+cd metricsia
 ```
 
 2. **Instale as dependências**
@@ -130,8 +130,8 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 ## 🆘 Suporte
 
 - **Documentação**: [docs/](docs/)
-- **Issues**: [GitHub Issues](https://github.com/seu-usuario/metricawhats/issues)
-- **Email**: suporte@metricawhats.com
+- **Issues**: [GitHub Issues](https://github.com/seu-usuario/metricsia/issues)
+- **Email**: suporte@metricsia.com
 
 ## 🗺️ Roadmap
 
@@ -143,4 +143,4 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 
 ---
 
-**MetricaWhats** - Transformando atendimentos em resultados! 🚀
+**MetricsIA** - Transformando atendimentos em resultados! 🚀

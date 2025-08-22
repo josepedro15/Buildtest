@@ -1,6 +1,6 @@
 {
-  "name": "MetricaWhats - Analytics para WhatsApp",
-  "short_name": "MetricaWhats",
+  "name": "MetricsIA - Analytics para WhatsApp",
+"short_name": "MetricsIA",
   "description": "Transforme seus atendimentos do WhatsApp em insights poderosos",
   "start_url": "/",
   "display": "standalone",

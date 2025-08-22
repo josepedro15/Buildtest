@@ -1,4 +1,4 @@
-# 🎨 Guia para Gerar Favicons do MetricaWhats
+# 🎨 Guia para Gerar Favicons do MetricsIA
 
 ## 📋 Arquivos Necessários
 
@@ -51,7 +51,7 @@ Para uma implementação completa, você precisa dos seguintes arquivos:
 - **Elementos**: 
   - Balão de mensagem
   - Gráficos/gráficos de barras
-  - "M" de MetricaWhats
+  - "M" de MetricsIA
   - Ícone de analytics
 
 ### **Versão Simples (SVG atual):**

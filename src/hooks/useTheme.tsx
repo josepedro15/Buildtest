@@ -5,7 +5,7 @@ type Theme = 'light' | 'dark';
 export function useTheme() {
   const [theme, setTheme] = useState<Theme>(() => {
     // Verificar se há tema salvo no localStorage
-    const savedTheme = localStorage.getItem('metricawhats-theme') as Theme;
+    const savedTheme = localStorage.getItem('metricsia-theme') as Theme;
     if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
       return savedTheme;
     }
@@ -31,7 +31,7 @@ export function useTheme() {
     }
     
     // Salvar no localStorage
-    localStorage.setItem('metricawhats-theme', theme);
+    localStorage.setItem('metricsia-theme', theme);
   }, [theme]);
 
   const toggleTheme = () => {

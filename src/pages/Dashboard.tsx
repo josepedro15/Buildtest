@@ -320,7 +320,7 @@ export default function Dashboard() {
                   </div>
                   <div>
                     <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent group-hover:from-primary/80 group-hover:to-primary/60 transition-all duration-200">
-                      MetricaWhats
+                      MetricsIA
                     </span>
                     <div className="text-xs text-muted-foreground group-hover:text-muted-foreground/80 transition-colors duration-200">
                       Analytics Dashboard
@@ -860,7 +860,7 @@ export default function Dashboard() {
             <div className="hidden md:block">•</div>
             <div className="flex items-center gap-2">
               <MessageSquare className="h-4 w-4" />
-              <span>MetricaWhats Analytics Engine v1.0</span>
+              <span>MetricsIA Analytics Engine v1.0</span>
             </div>
           </div>
         </div>

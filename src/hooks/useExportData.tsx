@@ -63,7 +63,7 @@ export function useExportData() {
     
     // ===== CABEÇALHO PROFISSIONAL =====
     csvData.push([createSeparator('=', 100)]);
-    csvData.push(['📊 RELATÓRIO WHATSAPP ANALYTICS - METRICAWHATS']);
+    csvData.push(['📊 RELATÓRIO WHATSAPP ANALYTICS - METRICSIA']);
     csvData.push([createSeparator('=', 100)]);
     csvData.push([]);
     
@@ -72,7 +72,7 @@ export function useExportData() {
     csvData.push([createSeparator('-', 50)]);
     csvData.push(['Período Analisado:', `${options.dateRange?.start || data.periodo_inicio} a ${options.dateRange?.end || data.periodo_fim}`]);
     csvData.push(['Data de Geração:', formatDate(new Date())]);
-    csvData.push(['Versão do Sistema:', 'MetricaWhats Analytics v1.0']);
+    csvData.push(['Versão do Sistema:', 'MetricsIA Analytics v1.0']);
     csvData.push(['Gerado por:', 'Sistema Automático']);
     csvData.push([]);
 
@@ -311,9 +311,9 @@ export function useExportData() {
 
     // ===== FOOTER PROFISSIONAL =====
     csvData.push([createSeparator('=', 100)]);
-    csvData.push(['📄 RELATÓRIO GERADO AUTOMATICAMENTE PELO SISTEMA METRICAWHATS']);
+    csvData.push(['📄 RELATÓRIO GERADO AUTOMATICAMENTE PELO SISTEMA METRICSIA']);
     csvData.push(['🚀 Transformando atendimentos do WhatsApp em resultados mensuráveis']);
-    csvData.push(['📧 Suporte: contato@metricawhats.com | 📱 WhatsApp: +55 31 99495-9512']);
+    csvData.push(['📧 Suporte: contato@metricsia.com | 📱 WhatsApp: +55 31 99495-9512']);
     csvData.push([createSeparator('=', 100)]);
 
     // Converter para CSV com formatação melhorada
@@ -326,7 +326,7 @@ export function useExportData() {
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', `MetricaWhats_Relatorio_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `MetricsIA_Relatorio_${new Date().toISOString().split('T')[0]}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -344,7 +344,7 @@ export function useExportData() {
     const excelData: string[][] = [];
     
     // ===== CABEÇALHO EXCEL-FRIENDLY =====
-    excelData.push(['RELATÓRIO WHATSAPP ANALYTICS - METRICAWHATS']);
+    excelData.push(['RELATÓRIO WHATSAPP ANALYTICS - METRICSIA']);
     excelData.push([]);
     
     // ===== INFORMAÇÕES DO RELATÓRIO =====
@@ -352,7 +352,7 @@ export function useExportData() {
     excelData.push(['Campo', 'Valor']);
     excelData.push(['Período Analisado', `${options.dateRange?.start || data.periodo_inicio} a ${options.dateRange?.end || data.periodo_fim}`]);
     excelData.push(['Data de Geração', formatDate(new Date())]);
-    excelData.push(['Versão do Sistema', 'MetricaWhats Analytics v1.0']);
+    excelData.push(['Versão do Sistema', 'MetricsIA Analytics v1.0']);
     excelData.push(['Gerado por', 'Sistema Automático']);
     excelData.push([]);
 
@@ -570,9 +570,9 @@ export function useExportData() {
     excelData.push([]);
 
     // ===== FOOTER PROFISSIONAL =====
-    excelData.push(['RELATÓRIO GERADO AUTOMATICAMENTE PELO SISTEMA METRICAWHATS']);
+    excelData.push(['RELATÓRIO GERADO AUTOMATICAMENTE PELO SISTEMA METRICSIA']);
     excelData.push(['Transformando atendimentos do WhatsApp em resultados mensuráveis']);
-    excelData.push(['Suporte: contato@metricawhats.com | WhatsApp: +55 31 99495-9512']);
+    excelData.push(['Suporte: contato@metricsia.com | WhatsApp: +55 31 99495-9512']);
 
     // Converter para CSV (Excel-friendly)
     const csvContent = excelData.map(row => 
@@ -584,7 +584,7 @@ export function useExportData() {
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', `MetricaWhats_Relatorio_${new Date().toISOString().split('T')[0]}.xlsx`);
+    link.setAttribute('download', `MetricsIA_Relatorio_${new Date().toISOString().split('T')[0]}.xlsx`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -623,7 +623,7 @@ export function useExportData() {
             <!-- Cabeçalho -->
             <div style="text-align: center; margin-bottom: 30px; padding: 20px; background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: white; border-radius: 8px;">
               <h1 style="font-size: 24px; margin: 0 0 10px 0; font-weight: bold;">📊 RELATÓRIO WHATSAPP ANALYTICS</h1>
-              <p style="margin: 0; opacity: 0.9;">MetricaWhats - Análise de Atendimentos</p>
+              <p style="margin: 0; opacity: 0.9;">MetricsIA - Análise de Atendimentos</p>
             </div>
             
             <!-- Informações do Relatório -->
@@ -632,7 +632,7 @@ export function useExportData() {
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px;">
                 <div><strong>Período:</strong> ${options.dateRange?.start || data.periodo_inicio} a ${options.dateRange?.end || data.periodo_fim}</div>
                 <div><strong>Gerado em:</strong> ${formatDate(new Date())}</div>
-                <div><strong>Versão:</strong> MetricaWhats Analytics v1.0</div>
+                <div><strong>Versão:</strong> MetricsIA Analytics v1.0</div>
                 <div><strong>Gerado por:</strong> Sistema Automático</div>
               </div>
             </div>
@@ -986,11 +986,11 @@ export function useExportData() {
         // Adicionar rodapé
         htmlContent += `
             <div style="margin-top: 40px; padding: 20px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center;">
-              <div style="font-size: 14px; font-weight: bold; color: #25D366; margin-bottom: 5px;">MetricaWhats Analytics</div>
+              <div style="font-size: 14px; font-weight: bold; color: #25D366; margin-bottom: 5px;">MetricsIA Analytics</div>
               <div style="font-size: 10px; color: #6b7280;">
                 <p style="margin: 2px 0;">Relatório gerado automaticamente</p>
-                <p style="margin: 2px 0;">© 2024 MetricaWhats - Todos os direitos reservados</p>
-                <p style="margin: 2px 0;">📧 contato@metricawhats.com | 📱 +55 31 99495-9512</p>
+                <p style="margin: 2px 0;">© 2024 MetricsIA - Todos os direitos reservados</p>
+                <p style="margin: 2px 0;">📧 contato@metricsia.com | 📱 +55 31 99495-9512</p>
               </div>
             </div>
           </div>
@@ -1072,7 +1072,7 @@ export function useExportData() {
         <body>
           <div class="header">
             <h1>📊 RELATÓRIO WHATSAPP ANALYTICS</h1>
-            <p>MetricaWhats - ${formatDate(new Date())}</p>
+            <p>MetricsIA - ${formatDate(new Date())}</p>
           </div>
           <div class="metric">
             <h3>Total de Atendimentos: ${data.total_atendimentos?.toLocaleString('pt-BR') || '0'}</h3>

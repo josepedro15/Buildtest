@@ -255,7 +255,7 @@ const ContactForm = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-foreground">E-mail</h4>
-                  <p className="text-muted-foreground">contato@metricawhats.com</p>
+                  <p className="text-muted-foreground">contato@metricsia.com</p>
                 </div>
               </div>
 

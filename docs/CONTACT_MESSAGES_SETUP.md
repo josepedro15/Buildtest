@@ -2,7 +2,7 @@
 
 ## 📋 Visão Geral
 
-Este documento descreve a implementação do sistema de mensagens de contato para o MetricaWhats, incluindo:
+Este documento descreve a implementação do sistema de mensagens de contato para o MetricsIA, incluindo:
 
 - Tabela no banco de dados para armazenar mensagens
 - Hook personalizado para gerenciar mensagens
@@ -248,7 +248,7 @@ supabase db push
 Para dúvidas ou problemas:
 
 - **WhatsApp:** +55 31 99495-9512
-- **Email:** contato@metricawhats.com
+- **Email:** contato@metricsia.com
 - **Documentação:** Ver outros arquivos em `/docs/`
 
 ---

@@ -1,8 +1,8 @@
-# 🚀 Melhorias na Formatação de Exportação - MetricaWhats
+# 🚀 Melhorias na Formatação de Exportação - MetricsIA
 
 ## 📋 Resumo das Melhorias
 
-As funcionalidades de exportação do **MetricaWhats** foram completamente reformuladas para oferecer relatórios profissionais e bem estruturados. Agora os arquivos CSV e Excel têm formatação de nível empresarial.
+As funcionalidades de exportação do **MetricsIA** foram completamente reformuladas para oferecer relatórios profissionais e bem estruturados. Agora os arquivos CSV e Excel têm formatação de nível empresarial.
 
 ## ✨ Principais Melhorias Implementadas
 
@@ -174,13 +174,13 @@ const getStatusWithColor = (value: number, thresholds: { excellent: number; good
 #### **CSV (.csv)**
 - **Formatação rica**: Separadores visuais e emojis
 - **Encoding UTF-8**: Suporte a caracteres especiais
-- **Nome profissional**: `MetricaWhats_Relatorio_2024-01-31.csv`
+- **Nome profissional**: `MetricsIA_Relatorio_2024-01-31.csv`
 
 #### **Excel (.xlsx)**
 - **Estrutura tabular**: Formato otimizado para planilhas
 - **Colunas organizadas**: Dados estruturados para análise
 - **Informações contextuais**: Observações e tendências
-- **Nome profissional**: `MetricaWhats_Relatorio_2024-01-31.xlsx`
+- **Nome profissional**: `MetricsIA_Relatorio_2024-01-31.xlsx`
 
 #### **PDF (.pdf)**
 - **Design moderno**: Layout profissional para apresentação
@@ -236,4 +236,4 @@ O arquivo gerado terá uma estrutura como mostrada no arquivo `exemplo-relatorio
 
 ---
 
-**MetricaWhats Analytics** - Transformando atendimentos do WhatsApp em resultados mensuráveis 📱📊
+**MetricsIA Analytics** - Transformando atendimentos do WhatsApp em resultados mensuráveis 📱📊

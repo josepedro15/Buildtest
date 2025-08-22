@@ -15,6 +15,6 @@ export function getWhatsAppLink(phone: string, message?: string): string {
 // Link padrão do WhatsApp para contato
 export const WHATSAPP_CONTACT = {
   phone: '+5531994959512',
-  message: 'Olá! Gostaria de saber mais sobre o MetricaWhats e como posso implementar em minha empresa.',
-  link: getWhatsAppLink('+5531994959512', 'Olá! Gostaria de saber mais sobre o MetricaWhats e como posso implementar em minha empresa.')
+  message: 'Olá! Gostaria de saber mais sobre o MetricsIA e como posso implementar em minha empresa.',
+link: getWhatsAppLink('+5531994959512', 'Olá! Gostaria de saber mais sobre o MetricsIA e como posso implementar em minha empresa.')
 };

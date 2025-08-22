@@ -147,7 +147,7 @@ export default function ContactMessages() {
   };
 
   const handleWhatsAppClick = (phone: string, name: string) => {
-    const message = `Olá ${name}! Vi sua mensagem no formulário de contato do MetricaWhats. Como posso ajudar?`;
+    const message = `Olá ${name}! Vi sua mensagem no formulário de contato do MetricsIA. Como posso ajudar?`;
     const whatsappLink = getWhatsAppLink(phone, message);
     window.open(whatsappLink, '_blank');
   };

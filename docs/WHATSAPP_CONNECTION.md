@@ -1,8 +1,8 @@
-# Conexão WhatsApp - MetricaWhats
+# Conexão WhatsApp - MetricsIA
 
 ## 📱 Visão Geral
 
-A funcionalidade de conexão WhatsApp permite que os usuários conectem suas instâncias do WhatsApp Business à plataforma MetricaWhats para coleta e análise de dados de atendimento.
+A funcionalidade de conexão WhatsApp permite que os usuários conectem suas instâncias do WhatsApp Business à plataforma MetricsIA para coleta e análise de dados de atendimento.
 
 ## 🚀 Como Funcionar
 
@@ -176,10 +176,10 @@ supabase logs
 ## 📞 Suporte
 
 Para problemas técnicos:
-- **Email**: suporte@metricawhats.com
-- **Documentação**: [docs.metricawhats.com](https://docs.metricawhats.com)
-- **Issues**: [GitHub Issues](https://github.com/seu-usuario/metricawhats/issues)
+- **Email**: suporte@metricsia.com
+- **Documentação**: [docs.metricsia.com](https://docs.metricsia.com)
+- **Issues**: [GitHub Issues](https://github.com/seu-usuario/metricsia/issues)
 
 ---
 
-**Desenvolvido com ❤️ pela equipe MetricaWhats**
+**Desenvolvido com ❤️ pela equipe MetricsIA**
